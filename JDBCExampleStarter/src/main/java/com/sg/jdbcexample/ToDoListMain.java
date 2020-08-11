@@ -186,8 +186,9 @@ public class ToDoListMain {
         
         //DAO
         try(Connection conn = ds.getConnection()) {
-            String sql = "DELETE FROM todo WHERE id = ?";
-            PreparedStatement pStmt = conn.prepareCall(sql);
+            String removeQuery = "DELETE FROM todo "
+                    + "WHERE id = ?";
+            PreparedStatement pStmt = conn.prepareCall(removeQuery);
             pStmt.setString(1, itemId);
             pStmt.executeUpdate();
             System.out.println("Remove Complete");
