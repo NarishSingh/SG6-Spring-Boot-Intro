@@ -21,12 +21,13 @@ public class App implements CommandLineRunner {
     private static Scanner sc;
 
     @Autowired
-    private JdbcTemplate jdbc;
+    private JdbcTemplate jdbc; //creates bean
 
     public static void main(String args[]) {
         SpringApplication.run(App.class, args);
     }
 
+    //App controller
     @Override
     public void run(String... args) throws Exception {
         sc = new Scanner(System.in);
@@ -61,7 +62,7 @@ public class App implements CommandLineRunner {
                     default:
                         System.out.println("I don't understand");
                 }
-            } catch (Exception ex) {
+            } catch (SQLException ex) {
                 System.out.println("Error communicating with database");
                 System.out.println(ex.getMessage());
                 System.exit(0);
@@ -70,6 +71,9 @@ public class App implements CommandLineRunner {
         } while (true);
     }
 
+    /**
+     * RowMapper implementation
+     */
     private static final class ToDoMapper implements RowMapper<ToDo> {
 
         @Override
@@ -85,6 +89,11 @@ public class App implements CommandLineRunner {
         }
     }
 
+    /**
+     * Display list of ToDo items from db
+     *
+     * @throws SQLException if cannot connect to db
+     */
     private void displayList() throws SQLException {
         //DAO
         String query = "SELECT * FROM todo";
@@ -101,6 +110,11 @@ public class App implements CommandLineRunner {
         System.out.println("");
     }
 
+    /**
+     * Add new todo item
+     *
+     * @throws SQLException if cannot connect to db
+     */
     private void addItem() throws SQLException {
         //VIEW
         System.out.println("Add Item");
@@ -119,12 +133,17 @@ public class App implements CommandLineRunner {
         System.out.println("Add Complete");
     }
 
+    /**
+     * Update an existing todo item
+     *
+     * @throws SQLException if cannot connect to db
+     */
     private void updateItem() throws SQLException {
         //VIEW
         System.out.println("Update Item");
         System.out.println("Which item do you want to update?");
         String itemId = sc.nextLine();
-        
+
         //DAO - read by id
         String query = "SELECT * FROM todo WHERE id = ?";
         ToDo item = jdbc.queryForObject(query, new ToDoMapper(), itemId);
@@ -165,16 +184,21 @@ public class App implements CommandLineRunner {
                 item.getNote(),
                 item.isFinished(),
                 item.getId());
-        
+
         System.out.println("Update Complete");
     }
 
+    /**
+     * Remove a todo item
+     *
+     * @throws SQLException if cannot connect to db
+     */
     private void removeItem() throws SQLException {
         //VIEW
         System.out.println("Remove Item");
         System.out.println("Which item would you like to remove?");
         String itemId = sc.nextLine();
-        
+
         //DAO
         String deleteQuery = "DELETE FROM todo WHERE id = ?";
         jdbc.update(deleteQuery, itemId);

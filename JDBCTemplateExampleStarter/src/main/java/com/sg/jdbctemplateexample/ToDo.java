@@ -5,6 +5,7 @@ package com.sg.jdbctemplateexample;
  * @author kylerudy
  */
 public class ToDo {
+
     int id;
     String todo;
     String note;
@@ -41,6 +42,5 @@ public class ToDo {
     public void setFinished(boolean finished) {
         this.finished = finished;
     }
-    
-    
+
 }
