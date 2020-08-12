@@ -26,9 +26,11 @@ public class EmployeeDaoDB implements EmployeeDao {
     @Override
     public Employee getEmployeeById(int id) {
         try {
-            final String SELECT_EMPLOYEE_BY_ID = "SELECT * FROM employee WHERE id = ?";
+            final String SELECT_EMPLOYEE_BY_ID = "SELECT * FROM employee "
+                    + "WHERE id = ?";
             return jdbc.queryForObject(SELECT_EMPLOYEE_BY_ID, new EmployeeMapper(), id);
         } catch(DataAccessException ex) {
+            //triggers if cannot return the employee as .queryForObject cannot return null
             return null;
         }
     }
@@ -38,10 +40,8 @@ public class EmployeeDaoDB implements EmployeeDao {
     public Employee addEmployee(Employee employee) {
         final String INSERT_EMPLOYEE = "INSERT INTO employee(firstName, lastName) "
                 + "VALUES(?,?)";
-        jdbc.update(INSERT_EMPLOYEE, 
-                employee.getFirstName(),
-                employee.getLastName());
-        int newId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
+        jdbc.update(INSERT_EMPLOYEE,employee.getFirstName(),employee.getLastName());
+        int newId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class); //returns last int pk
         employee.setId(newId);
         return employee;
     }
@@ -50,20 +50,21 @@ public class EmployeeDaoDB implements EmployeeDao {
     public void updateEmployee(Employee employee) {
         final String UPDATE_EMPLOYEE = "UPDATE employee SET firstName = ?, lastName = ? "
                 + "WHERE id = ?";
-        jdbc.update(UPDATE_EMPLOYEE,
-                employee.getFirstName(),
-                employee.getLastName(),
+        jdbc.update(UPDATE_EMPLOYEE, employee.getFirstName(), employee.getLastName(),
                 employee.getId());
     }
 
     @Override
     @Transactional
     public void deleteEmployeeById(int id) {
+        //must delete from bridge table first
         final String DELETE_MEETING_EMPLOYEE = "DELETE FROM meeting_employee "
                 + "WHERE employeeId = ?";
         jdbc.update(DELETE_MEETING_EMPLOYEE, id);
         
-        final String DELETE_EMPLOYEE = "DELETE FROM employee WHERE id = ?";
+        //delete the actual employee row
+        final String DELETE_EMPLOYEE = "DELETE FROM employee "
+                + "WHERE id = ?";
         jdbc.update(DELETE_EMPLOYEE, id);
     }
     

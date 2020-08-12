@@ -31,6 +31,9 @@ public class MeetingController {
     @Autowired
     RoomDao roomDao;
 
+    /**
+     * App controller
+     */
     public void run() {
         while (true) {
             try {
@@ -52,13 +55,15 @@ public class MeetingController {
                         view.exit();
                         System.exit(0);
                 }
-
             } catch (Exception ex) {
                 view.printError(ex);
             }
         }
     }
 
+    /**
+     * Meetings sub-controller
+     */
     private void handleMeetings() {
         while(true) {
             view.displayMeetingBanner();
@@ -86,6 +91,9 @@ public class MeetingController {
         }
     }
 
+    /**
+     * Rooms subcontroller
+     */
     private void handleRooms() {
         while(true) {
             view.displayRoomBanner();
@@ -116,6 +124,9 @@ public class MeetingController {
         }
     }
 
+    /**
+     * Employees subcontroller
+     */
     private void handleEmployees() {
         while (true) {
             view.displayEmployeesBanner();
@@ -149,33 +160,49 @@ public class MeetingController {
         }
     }
 
+    /**
+     * List all employees from db
+     */
     private void listEmployees() {
         view.listEmployeesBanner();
         List<Employee> employees = employeeDao.getAllEmployees();
         view.listEmployees(employees);
     }
 
+    /**
+     * Add new employee
+     */
     private void addEmployee() {
         view.addEmployeeBanner();
+        
         String firstName = view.getEmployeeFirstName();
         String lastName = view.getEmployeeLastName();
-        Employee employee = new Employee();
+        
+        Employee employee = new Employee(); //d.ctor
         employee.setFirstName(firstName);
         employee.setLastName(lastName);
+        
         employee = employeeDao.addEmployee(employee);
         view.addEmployeeSuccess();
     }
 
+    /**
+     * Update info on an existing employee
+     */
     private void updateEmployee() {
         view.updateEmployeeBanner();
+        
         int id = view.getEmployeeId();
         Employee employee = employeeDao.getEmployeeById(id);
         if (employee != null) {
             view.displayUpdateInstructions();
+            
             String firstName = view.updateField("First Name", employee.getFirstName());
             String lastName = view.updateField("Last Name", employee.getLastName());
+            
             employee.setFirstName(firstName);
             employee.setLastName(lastName);
+            
             employeeDao.updateEmployee(employee);
             view.updateEmployeeSuccess();
         } else {
@@ -183,8 +210,12 @@ public class MeetingController {
         }
     }
 
+    /**
+     * Delete employee from db
+     */
     private void deleteEmployee() {
         view.deleteEmployeeBanner();
+        
         int id = view.getEmployeeId();
         Employee employee = employeeDao.getEmployeeById(id);
         if (employee != null) {
@@ -195,8 +226,12 @@ public class MeetingController {
         }
     }
 
+    /**
+     * List all meetings for a particular employee
+     */
     private void listMeetingsForEmployee() {
         view.listMeetingsForEmployeeBanner();
+        
         int id = view.getEmployeeId();
         Employee employee = employeeDao.getEmployeeById(id);
         if (employee != null) {
@@ -210,6 +245,7 @@ public class MeetingController {
 
     private void addEmployeeToMeeting() {
         view.addEmployeToMeetingBanner();
+        
         int id = view.getEmployeeId();
         Employee employee = employeeDao.getEmployeeById(id);
         if (employee != null) {
@@ -217,6 +253,7 @@ public class MeetingController {
             view.displayMeetings(meetings);
             int meetingId = view.getMeetingIdToJoin();
             Meeting meeting = meetingDao.getMeetingByid(meetingId);
+            
             if(!meeting.getAttendees().contains(employee)) {
                 meeting.getAttendees().add(employee);
                 meetingDao.updateMeeting(meeting);
@@ -235,17 +272,21 @@ public class MeetingController {
 
     private void addRoom() {
         view.addRoomBanner();
+        
         String name = view.getRoomName();
         String description = view.getRoomDescription();
+        
         Room room = new Room();
         room.setName(name);
         room.setDescription(description);
         room = roomDao.addRoom(room);
+        
         view.addRoomSuccess();
     }
 
     private void updateRoom() {
         view.updateRoomBanner();
+        
         int id = view.getRoomId();
         Room room = roomDao.getRoomById(id);
         if (room != null) {
@@ -263,6 +304,7 @@ public class MeetingController {
 
     private void deleteRoom() {
         view.deleteRoomBanner();
+        
         int id = view.getRoomId();
         Room room = roomDao.getRoomById(id);
         if (room != null) {
@@ -275,6 +317,7 @@ public class MeetingController {
 
     private void listMeetingsForRoom() {
         view.listMeetingsForRoomBanner();
+        
         int id = view.getRoomId();
         Room room = roomDao.getRoomById(id);
         if (room != null) {
@@ -294,12 +337,15 @@ public class MeetingController {
 
     private void addMeeting() {
         view.addMeetingBanner();
+        
         String name = view.getMeetingName();
         LocalDateTime time = view.getMeetingDatetime();
         List<Room> rooms = roomDao.getAllRooms();
+        
         view.displayRooms(rooms);
         int id = view.getMeetingRoomId();
         Room room = roomDao.getRoomById(id);
+        
         Meeting meeting = new Meeting();
         meeting.setName(name);
         meeting.setRoom(room);
@@ -310,15 +356,18 @@ public class MeetingController {
 
     private void updateMeeting() {
         view.updateMeetingBanner();
+        
         int id = view.getMeetingId();
         Meeting meeting = meetingDao.getMeetingByid(id);
         if (meeting != null) {
             view.displayUpdateInstructions();
             String name = view.updateField("Name", meeting.getName());
             LocalDateTime datetime = view.updateMeetingTime(meeting.getTime());
+            
             List<Room> rooms = roomDao.getAllRooms();
             view.displayRooms(rooms);
             int roomId = Integer.parseInt(view.updateField("Room ID", "" + meeting.getRoom().getId()));
+            
             Room room = roomDao.getRoomById(roomId);
             meeting.setName(name);
             meeting.setTime(datetime);
@@ -334,6 +383,7 @@ public class MeetingController {
 
     private void deleteMeeting() {
         view.deleteMeetingBanner();
+        
         int id = view.getMeetingId();
         Meeting meeting = meetingDao.getMeetingByid(id);
         if (meeting != null) {
