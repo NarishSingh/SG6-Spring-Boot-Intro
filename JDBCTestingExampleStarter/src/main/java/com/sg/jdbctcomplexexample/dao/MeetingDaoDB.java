@@ -70,7 +70,8 @@ public class MeetingDaoDB implements MeetingDao {
     @Transactional
     public void updateMeeting(Meeting meeting) {
         final String UPDATE_MEETING = "UPDATE meeting "
-                + "SET name = ?, time = ?, roomId = ? WHERE id = ?";
+                + "SET name = ?, time = ?, roomId = ? "
+                + "WHERE id = ?";
         jdbc.update(UPDATE_MEETING,
                 meeting.getName(),
                 Timestamp.valueOf(meeting.getTime()),
