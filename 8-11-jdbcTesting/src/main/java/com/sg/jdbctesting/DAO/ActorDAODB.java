@@ -14,10 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class ActorDAODB implements ActorDAO {
-    
+
     @Autowired
     JdbcTemplate jdbc;
-    
+
     @Override
     @Transactional
     public Actor createActor(Actor newActor) {
@@ -28,11 +28,11 @@ public class ActorDAODB implements ActorDAO {
                 newActor.getFirstName(),
                 newActor.getLastName(),
                 newActor.getLastUpdate());
-        
+
         //grab auto++ key and set
         int newId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
         newActor.setActorId(newId);
-        
+
         return newActor;
     }
 
@@ -58,7 +58,7 @@ public class ActorDAODB implements ActorDAO {
         String deleteQuery = "DELETE FROM actor"
                 + "WHERE actor_id = ?";
         int rowsDeleted = jdbc.update(deleteQuery, removedActor.getActorId());
-        
+
         if (rowsDeleted == 1) {
             return removedActor;
         } else {
@@ -72,25 +72,23 @@ public class ActorDAODB implements ActorDAO {
                 + "INNER JOIN film_actor fa ON a.actor_id = fa.actor_id "
                 + "WHERE fa.film_id = ?";
 
-        
         List<Actor> actorsByFilm = jdbc.query(actorListQuery, new ActorMapper(), film.getTitle());
-        
+
         return actorsByFilm;
     }
 
     public static final class ActorMapper implements RowMapper<Actor> {
 
         @Override
-        public Actor mapRow(ResultSet rs, int index) throws SQLException{
+        public Actor mapRow(ResultSet rs, int index) throws SQLException {
             Actor a = new Actor();
             a.setActorId(rs.getInt("actor_id"));
             a.setFirstName(rs.getString("first_name"));
             a.setLastName(rs.getString("last_name"));
             a.setLastUpdate(rs.getTimestamp("last_update").toLocalDateTime());
-            
+
             return a;
         }
     }
 
-    
 }

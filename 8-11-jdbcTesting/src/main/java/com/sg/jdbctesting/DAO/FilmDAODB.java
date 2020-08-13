@@ -39,7 +39,7 @@ public class FilmDAODB implements FilmDAO {
     }
 
     @Override
-    public List<Actor> getActorsByFilm(Film film) {
+    public List<Film> getFilmsByActors(Actor actor) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
