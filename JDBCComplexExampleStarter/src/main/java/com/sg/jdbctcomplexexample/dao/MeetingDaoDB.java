@@ -35,7 +35,8 @@ public class MeetingDaoDB implements MeetingDao {
     @Override
     public Meeting getMeetingByid(int id) {
         try {
-            final String SELECT_MEETING_BY_ID = "SELECT * FROM meeting WHERE id = ?";
+            final String SELECT_MEETING_BY_ID = "SELECT * FROM meeting "
+                    + "WHERE id = ?";
             Meeting meeting = jdbc.queryForObject(SELECT_MEETING_BY_ID,
                     new MeetingMapper(), id);
             meeting.setRoom(getRoomForMeeting(meeting));
@@ -49,7 +50,8 @@ public class MeetingDaoDB implements MeetingDao {
     @Override
     @Transactional
     public Meeting addMeeting(Meeting meeting) {
-        final String INSERT_MEETING = "INSERT INTO meeting(name, time, roomId) VALUES(?,?,?)";
+        final String INSERT_MEETING = "INSERT INTO meeting(name, time, roomId) "
+                + "VALUES(?,?,?)";
         jdbc.update(INSERT_MEETING,
                 meeting.getName(),
                 Timestamp.valueOf(meeting.getTime()),
@@ -66,13 +68,15 @@ public class MeetingDaoDB implements MeetingDao {
     @Transactional
     public void updateMeeting(Meeting meeting) {
         final String UPDATE_MEETING = "UPDATE meeting "
-                + "SET name = ?, time = ?, roomId = ? WHERE id = ?";
+                + "SET name = ?, time = ?, roomId = ? "
+                + "WHERE id = ?";
         jdbc.update(UPDATE_MEETING,
                 meeting.getName(),
                 Timestamp.valueOf(meeting.getTime()),
                 meeting.getRoom().getId(),
                 meeting.getId());
 
+        //clean relationship if previous existing, then re-insert
         final String DELETE_MEETING_EMPLOYEE = "DELETE FROM meeting_employee "
                 + "WHERE meetingId = ?";
         jdbc.update(DELETE_MEETING_EMPLOYEE, meeting.getId());
@@ -85,19 +89,35 @@ public class MeetingDaoDB implements MeetingDao {
                 + "WHERE meetingId = ?";
         jdbc.update(DELETE_MEETING_EMPLOYEE, id);
 
-        final String DELETE_MEETING = "DELETE FROM meeting WHERE id = ?";
+        final String DELETE_MEETING = "DELETE FROM meeting "
+                + "WHERE id = ?";
         jdbc.update(DELETE_MEETING, id);
     }
 
     /*special methods due to relations, not seen in other daos*/
     @Override
     public List<Meeting> getMeetingsForRoom(Room room) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        final String SELECT_MEETINGS_FOR_ROOM = "SELECT * FROM meeting "
+                + "WHERE roomId = ?";
+        List<Meeting> meetings = jdbc.query(SELECT_MEETINGS_FOR_ROOM, 
+                new MeetingMapper(), room.getId());
+        
+        associateRoomsAndEmployeesToMeeting(meetings);
+        
+        return meetings;
     }
 
     @Override
     public List<Meeting> getMeetingsForEmployee(Employee employee) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        final String SELECT_MEETINGS_FOR_EMPLOYEE = "SELECT * FROM meeting m "
+                + "JOIN meeting_employee me ON m.id = me.meetingId "
+                + "WHERE me.employeeId = ?";
+        List<Meeting> meetings = jdbc.query(SELECT_MEETINGS_FOR_EMPLOYEE, 
+                new MeetingMapper(), employee.getId());
+        
+        associateRoomsAndEmployeesToMeeting(meetings);
+        
+        return meetings;
     }
 
     /*helper methods*/
@@ -118,8 +138,8 @@ public class MeetingDaoDB implements MeetingDao {
     }
 
     private void insertMeetingEmployee(Meeting meeting) {
-        final String INSERT_MEETING_EMPLOYEE = "INSERT INTO meeting_employee"
-                + "(meetingId, employeeId) VALUES(?,?)";
+        final String INSERT_MEETING_EMPLOYEE = "INSERT INTO meeting_employee(meetingId, employeeId) "
+                + "VALUES(?,?)";
         for (Employee employee : meeting.getAttendees()) {
             jdbc.update(INSERT_MEETING_EMPLOYEE, meeting.getId(), employee.getId());
         }

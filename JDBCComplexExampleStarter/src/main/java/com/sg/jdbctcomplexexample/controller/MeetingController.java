@@ -92,7 +92,7 @@ public class MeetingController {
     }
 
     /**
-     * Rooms subcontroller
+     * Rooms sub-controller
      */
     private void handleRooms() {
         while(true) {
@@ -125,7 +125,7 @@ public class MeetingController {
     }
 
     /**
-     * Employees subcontroller
+     * Employees sub-controller
      */
     private void handleEmployees() {
         while (true) {
@@ -243,6 +243,9 @@ public class MeetingController {
         }
     }
 
+    /**
+     * Add a employee to meeting
+     */
     private void addEmployeeToMeeting() {
         view.addEmployeToMeetingBanner();
         
@@ -255,7 +258,7 @@ public class MeetingController {
             Meeting meeting = meetingDao.getMeetingByid(meetingId);
             
             if(!meeting.getAttendees().contains(employee)) {
-                meeting.getAttendees().add(employee);
+                meeting.getAttendees().add(employee); //add to meeting list
                 meetingDao.updateMeeting(meeting);
             }
             view.addEmployeeToMeetingSuccess();
@@ -264,12 +267,18 @@ public class MeetingController {
         }
     }
 
+    /**
+     * List all active rooms in db
+     */
     private void listRooms() {
         view.listRoomsBanner();
         List<Room> rooms = roomDao.getAllRooms();
         view.displayRooms(rooms);
     }
 
+    /**
+     * Add a room to db
+     */
     private void addRoom() {
         view.addRoomBanner();
         
@@ -284,6 +293,9 @@ public class MeetingController {
         view.addRoomSuccess();
     }
 
+    /**
+     * Update an existing room in db
+     */
     private void updateRoom() {
         view.updateRoomBanner();
         
@@ -291,17 +303,22 @@ public class MeetingController {
         Room room = roomDao.getRoomById(id);
         if (room != null) {
             view.displayUpdateInstructions();
+            
             String name = view.updateField("Name", room.getName());
             String description = view.updateField("Description", room.getDescription());
             room.setName(name);
             room.setDescription(description);
             roomDao.updateRoom(room);
+            
             view.updateRoomSuccess();
         } else {
             view.invalidRoom();
         }
     }
 
+    /**
+     * Delete a room from db
+     */
     private void deleteRoom() {
         view.deleteRoomBanner();
         
@@ -315,6 +332,9 @@ public class MeetingController {
         }
     }
 
+    /**
+     * List all meetings for a given room
+     */
     private void listMeetingsForRoom() {
         view.listMeetingsForRoomBanner();
         
@@ -329,12 +349,18 @@ public class MeetingController {
         }
     }
 
+    /**
+     * List all meetings
+     */
     private void listMeeting() {
         view.listMeetingsBanner();
         List<Meeting> meetings = meetingDao.getAllMeetings();
         view.displayMeetings(meetings);
     }
 
+    /**
+     * Add a meeting
+     */
     private void addMeeting() {
         view.addMeetingBanner();
         
@@ -354,6 +380,9 @@ public class MeetingController {
         view.addMeetingSuccess();
     }
 
+    /**
+     * Update meeting info
+     */
     private void updateMeeting() {
         view.updateMeetingBanner();
         
@@ -381,6 +410,9 @@ public class MeetingController {
         }
     }
 
+    /**
+     * Delete a meeting from db
+     */
     private void deleteMeeting() {
         view.deleteMeetingBanner();
         

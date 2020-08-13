@@ -26,7 +26,8 @@ public class RoomDaoDB implements RoomDao {
     @Override
     public Room getRoomById(int id) {
         try {
-            final String SELECT_ROOM_BY_ID = "SELECT * FROM room WHERE id = ?";
+            final String SELECT_ROOM_BY_ID = "SELECT * FROM room "
+                    + "WHERE id = ?";
             return jdbc.queryForObject(SELECT_ROOM_BY_ID, new RoomMapper(), id);
         } catch (DataAccessException ex) {
             return null; //.queryForObject() must return an obj and will throw ex if grabs a null
@@ -58,14 +59,18 @@ public class RoomDaoDB implements RoomDao {
     @Override
     @Transactional
     public void deleteRoomById(int id) {
+        //Must delete down the line from romm to meeting, employee, etc.
         final String DELETE_MEETING_EMPLOYEE_BY_ROOM = "DELETE me.* FROM meeting_employee me "
-                + "JOIN meeting m ON me.meetingId = m.id WHERE m.roomId = ?";
+                + "JOIN meeting m ON me.meetingId = m.id "
+                + "WHERE m.roomId = ?";
         jdbc.update(DELETE_MEETING_EMPLOYEE_BY_ROOM, id);
 
-        final String DELETE_MEETING_BY_ROOM = "DELETE FROM meeting WHERE roomId = ?";
+        final String DELETE_MEETING_BY_ROOM = "DELETE FROM meeting "
+                + "WHERE roomId = ?";
         jdbc.update(DELETE_MEETING_BY_ROOM, id);
 
-        final String DELETE_ROOM = "DELETE FROM room WHERE id = ?";
+        final String DELETE_ROOM = "DELETE FROM room "
+                + "WHERE id = ?";
         jdbc.update(DELETE_ROOM, id);
     }
 
