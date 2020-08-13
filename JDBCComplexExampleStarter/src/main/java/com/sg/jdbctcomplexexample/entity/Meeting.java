@@ -55,5 +55,4 @@ public class Meeting {
         this.attendees = attendees;
     }
     
-    
 }
