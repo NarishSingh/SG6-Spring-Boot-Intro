@@ -10,6 +10,7 @@ import java.util.Objects;
  * @author kylerudy
  */
 public class Meeting {
+
     int id;
     String name;
     LocalDateTime time;

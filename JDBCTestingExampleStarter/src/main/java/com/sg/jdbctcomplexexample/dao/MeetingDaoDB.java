@@ -53,7 +53,8 @@ public class MeetingDaoDB implements MeetingDao {
     @Override
     @Transactional
     public Meeting addMeeting(Meeting meeting) {
-        final String INSERT_MEETING = "INSERT INTO meeting(name, time, roomId) VALUES(?,?,?)";
+        final String INSERT_MEETING = "INSERT INTO meeting(name, time, roomId) "
+                + "VALUES(?,?,?)";
         jdbc.update(INSERT_MEETING,
                 meeting.getName(),
                 Timestamp.valueOf(meeting.getTime()),
@@ -117,6 +118,7 @@ public class MeetingDaoDB implements MeetingDao {
         return meetings;
     }
     
+    /*helper methods*/
     private void addRoomAndEmployeesToMeetings(List<Meeting> meetings) {
         for(Meeting meeting : meetings) {
             meeting.setRoom(getRoomForMeeting(meeting));
@@ -133,16 +135,20 @@ public class MeetingDaoDB implements MeetingDao {
     
     private List<Employee> getEmployeesForMeeting(Meeting meeting) {
         final String SELECT_EMPLOYEES_FOR_MEETING = "SELECT e.* FROM employee e "
-                + "JOIN meeting_employee me ON e.id = me.employeeId WHERE me.meetingId = ?";
-        return jdbc.query(SELECT_EMPLOYEES_FOR_MEETING, new EmployeeMapper(), 
+                + "JOIN meeting_employee me ON e.id = me.employeeId "
+                + "WHERE me.meetingId = ?";
+        return jdbc.query(SELECT_EMPLOYEES_FOR_MEETING,
+                new EmployeeMapper(), 
                 meeting.getId());
     }
     
     private void insertMeetingEmployee(Meeting meeting) {
-        final String INSERT_MEETING_EMPLOYEE = "INSERT INTO meeting_employee"
-                + "(meetingId, employeeId) VALUES(?,?)";
+        final String INSERT_MEETING_EMPLOYEE = "INSERT INTO meeting_employee(meetingId, employeeId) "
+                + "VALUES(?,?)";
         for(Employee employee : meeting.getAttendees()) {
-            jdbc.update(INSERT_MEETING_EMPLOYEE, meeting.getId(), employee.getId());
+            jdbc.update(INSERT_MEETING_EMPLOYEE, 
+                    meeting.getId(), 
+                    employee.getId());
         }
     }
 
