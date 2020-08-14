@@ -39,7 +39,8 @@ public class MeetingDaoDB implements MeetingDao {
     @Override
     public Meeting getMeetingByid(int id) {
         try {
-            final String SELECT_MEETING_BY_ID = "SELECT * FROM meeting WHERE id = ?";
+            final String SELECT_MEETING_BY_ID = "SELECT * FROM meeting "
+                    + "WHERE id = ?";
             Meeting meeting = jdbc.queryForObject(SELECT_MEETING_BY_ID, 
                     new MeetingMapper(), id);
             meeting.setRoom(getRoomForMeeting(meeting));
@@ -91,13 +92,15 @@ public class MeetingDaoDB implements MeetingDao {
                 + "WHERE meetingId = ?";
         jdbc.update(DELETE_MEETING_EMPLOYEE, id);
         
-        final String DELETE_MEETING = "DELETE FROM meeting WHERE id = ?";
+        final String DELETE_MEETING = "DELETE FROM meeting "
+                + "WHERE id = ?";
         jdbc.update(DELETE_MEETING, id);
     }
     
     @Override
     public List<Meeting> getMeetingsForRoom(Room room) {
-        final String SELECT_MEETINGS_FOR_ROOM = "SELECT * FROM meeting WHERE roomId = ?";
+        final String SELECT_MEETINGS_FOR_ROOM = "SELECT * FROM meeting "
+                + "WHERE roomId = ?";
         List<Meeting> meetings = jdbc.query(SELECT_MEETINGS_FOR_ROOM, 
                 new MeetingMapper(), room.getId());
         
