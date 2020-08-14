@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -48,6 +49,7 @@ public class FilmDAODB implements FilmDAO {
         String readAllQuery = "SELECT * FROM film";
         List<Film> filmList = jdbc.query(readAllQuery, new FilmMapper());
 
+        //FilmMapper doesn't handle Lists, need to setup that field seperately
         for (Film film : filmList) {
             film.setFilmActors(getActorsForFilm(film));
         }
@@ -57,22 +59,83 @@ public class FilmDAODB implements FilmDAO {
 
     @Override
     public Film readFilmById(int filmId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            String selectFilmById = "SELECT * FROM film "
+                    + "WHERE film_id = ?";
+            Film film = jdbc.queryForObject(selectFilmById, 
+                    new FilmMapper(), 
+                    filmId);
+            
+            film.setFilmActors(getActorsForFilm(film)); //pull in list of actors for film
+            
+            return film;
+        } catch (DataAccessException e) {
+            return null;
+        }
     }
 
     @Override
+    @Transactional
     public Film updateFilm(Film film) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String updateQuery = "UPDATE film "
+                + "SET title = ?, "
+                    + "description = ?, "
+                    + "release_year = ?, "
+                    + "last_update = ?, "
+                + "WHERE film_id = ?";
+        int filmUpdate = jdbc.update(updateQuery, 
+                film.getTitle(),
+                film.getDescription(),
+                film.getReleaseYr(),
+                Timestamp.valueOf(film.getLastUpdate())
+        );
+        
+        //clear and update film_actor
+        String clearFilmActorQuery = "DELETE FROM film_actor "
+                + "WHERE film_id = ?";
+        jdbc.update(clearFilmActorQuery, film.getFilmId());
+        
+        associateFilmActor(film);
+        
+        //.update returns int so if only 1 row affected the update was successful
+        if (filmUpdate == 1) {
+            return film;
+        } else {
+            return null;
+        }
     }
 
     @Override
     public Film deleteFilm(Film film) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //delete from bridge table first
+        String deleteFilmActorQuery = "DELETE FROM film_actor "
+                + "WHERE film_id = ?";
+        jdbc.update(deleteFilmActorQuery, film.getFilmId());
+        
+        //delete film
+        String deleteFilmQuery = "DELETE FROM film "
+                + "WHERE film_id = ?";
+        int filmDeletion = jdbc.update(deleteFilmQuery, film.getFilmId());
+        
+        if (filmDeletion == 1) {
+            return film;
+        } else {
+            return null;
+        }
     }
 
     @Override
     public List<Film> getFilmsByActors(Actor actor) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String selectFilmsByActorQuery = "SELECT * FROM film_actor "
+                + "WHERE actor_id = ?";
+        List<Film> filmsForActor = jdbc.query(selectFilmsByActorQuery, 
+                new FilmMapper(), 
+                actor.getActorId()
+        );
+        
+        associateActorsToFilms(filmsForActor);
+        
+        return filmsForActor;
     }
 
     /*helper methods*/
@@ -97,7 +160,14 @@ public class FilmDAODB implements FilmDAO {
                 film.getFilmId()
         );
     }
+    
+    private void associateActorsToFilms(List<Film> films){
+        for (Film film : films) {
+            film.setFilmActors(getActorsForFilm(film));
+        }
+    }
 
+    /*rowmapper*/
     public static final class FilmMapper implements RowMapper<Film> {
 
         @Override
