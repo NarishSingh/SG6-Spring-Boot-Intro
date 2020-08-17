@@ -18,6 +18,13 @@ public class SimpleController {
         String[] result = {"Hello", "World", "!"};
         return result;
     }
+    
+    //from class, go to http://localhost:8080/api/homer
+    @GetMapping("/homer")
+    public String[] homerSimpson(){
+        String[] result = {"DOH!"};
+        return result;
+    }
 
     @PostMapping("/calculate")
     public String calculate(int operand1, String operator, int operand2) {
@@ -54,4 +61,11 @@ public class SimpleController {
     public void delete(@PathVariable int id) {
         //do nothing
     }
+    
+    //FIXME figure out how to do in postman
+    @PostMapping("/addMoney/{boxId}/amount/{moneyAmount}")
+    public String addMoney(@PathVariable int boxId, @PathVariable float moneyAmount){
+        return String.format("$%s has been added to box %s", moneyAmount, boxId);
+    }
+    
 }
