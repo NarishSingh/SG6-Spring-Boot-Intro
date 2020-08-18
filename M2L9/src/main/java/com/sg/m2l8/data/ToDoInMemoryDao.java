@@ -1,12 +1,17 @@
+/*
+In memory profile, all save to the ArrayList
+ */
 package com.sg.m2l8.data;
 
 import com.sg.m2l8.models.ToDo;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.context.annotation.Profile;
 
 import org.springframework.stereotype.Repository;
 
 @Repository
+@Profile("memory")
 public class ToDoInMemoryDao implements ToDoDao {
 
     private static final List<ToDo> todos = new ArrayList<>();
