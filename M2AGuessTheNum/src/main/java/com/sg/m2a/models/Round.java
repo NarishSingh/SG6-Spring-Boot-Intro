@@ -6,7 +6,7 @@ import java.util.Objects;
 public class Round {
 
     private int roundId;
-    private int gameId; //TODO think if this should be a Game obj or a final field
+    private int gameId; //fk to Game table
     private String guess;
     private LocalDateTime time;
     private String digitMatches;
@@ -31,7 +31,7 @@ public class Round {
     public void setGameId(int gameId) {
         this.gameId = gameId;
     }
-
+    
     public String getGuess() {
         return guess;
     }
@@ -59,12 +59,12 @@ public class Round {
     /*testing*/
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 67 * hash + this.roundId;
-        hash = 67 * hash + this.gameId;
-        hash = 67 * hash + Objects.hashCode(this.guess);
-        hash = 67 * hash + Objects.hashCode(this.time);
-        hash = 67 * hash + Objects.hashCode(this.digitMatches);
+        int hash = 3;
+        hash = 53 * hash + this.roundId;
+        hash = 53 * hash + this.gameId;
+        hash = 53 * hash + Objects.hashCode(this.guess);
+        hash = 53 * hash + Objects.hashCode(this.time);
+        hash = 53 * hash + Objects.hashCode(this.digitMatches);
         return hash;
     }
 

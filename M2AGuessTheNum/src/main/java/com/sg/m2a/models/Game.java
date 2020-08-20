@@ -1,6 +1,5 @@
 package com.sg.m2a.models;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,7 +8,7 @@ public class Game {
     private int gameId;
     private String answer;
     private boolean isFinished;
-    private List<Round> rounds = new ArrayList<>();
+    private List<Round> rounds;
 
     /*ctors*/
     public Game() {
@@ -47,15 +46,15 @@ public class Game {
     public void setRounds(List<Round> rounds) {
         this.rounds = rounds;
     }
-
+    
     /*testing*/
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 41 * hash + this.gameId;
-        hash = 41 * hash + Objects.hashCode(this.answer);
-        hash = 41 * hash + (this.isFinished ? 1 : 0);
-        hash = 41 * hash + Objects.hashCode(this.rounds);
+        int hash = 7;
+        hash = 53 * hash + this.gameId;
+        hash = 53 * hash + Objects.hashCode(this.answer);
+        hash = 53 * hash + (this.isFinished ? 1 : 0);
+        hash = 53 * hash + Objects.hashCode(this.rounds);
         return hash;
     }
 
@@ -88,7 +87,8 @@ public class Game {
 
     @Override
     public String toString() {
-        return "Game{" + "gameId=" + gameId + ", answer=" + answer + ", isFinished="
+        return "Game{" + "gameId=" + gameId + ", answer=" + answer + ", isFinished=" 
                 + isFinished + ", rounds=" + rounds + '}';
     }
+    
 }
