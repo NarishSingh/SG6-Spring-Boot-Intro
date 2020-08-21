@@ -16,6 +16,8 @@ CREATE TABLE game(
 CREATE TABLE round(
     roundId INT PRIMARY KEY AUTO_INCREMENT,
     gameId INT NOT NULL,
+    guess CHAR(4) NOT NULL,
+    `time` DATETIME NOT NULL DEFAULT NOW(),
     digitMatches CHAR(7) NOT NULL,
 
     CONSTRAINT `fk_Round_Game` FOREIGN KEY (gameId)
