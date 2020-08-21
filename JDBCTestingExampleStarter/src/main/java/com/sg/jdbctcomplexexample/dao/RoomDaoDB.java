@@ -31,7 +31,9 @@ public class RoomDaoDB implements RoomDao {
     @Override
     public Room getRoomById(int id) {
         try {
-            final String SELECT_ROOM_BY_ID = "SELECT * FROM room WHERE id = ?";
+            final String SELECT_ROOM_BY_ID = "SELECT * FROM room "
+                    + "WHERE id = ?";
+            
             return jdbc.queryForObject(SELECT_ROOM_BY_ID, new RoomMapper(), id);
         } catch(DataAccessException ex) {
             return null;
@@ -41,19 +43,25 @@ public class RoomDaoDB implements RoomDao {
     @Override
     @Transactional
     public Room addRoom(Room room) {
-        final String INSERT_ROOM = "INSERT INTO room(name, description) VALUES(?,?)";
+        //insert into db
+        final String INSERT_ROOM = "INSERT INTO room(name, description) "
+                + "VALUES(?,?)";
         jdbc.update(INSERT_ROOM, 
                 room.getName(), 
                 room.getDescription());
         
+        //grab ai id
         int newId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
         room.setId(newId);
+        
         return room;
     }
 
     @Override
     public void updateRoom(Room room) {
-        final String UPDATE_ROOM = "UPDATE room SET name = ?, description = ? WHERE id = ?";
+        final String UPDATE_ROOM = "UPDATE room "
+                + "SET name = ?, description = ? "
+                + "WHERE id = ?";
         jdbc.update(UPDATE_ROOM,
                 room.getName(),
                 room.getDescription(),
@@ -63,14 +71,20 @@ public class RoomDaoDB implements RoomDao {
     @Override
     @Transactional
     public void deleteRoomById(int id) {
+        //delete from bridge
         final String DELETE_MEETING_EMPLOYEE_BY_ROOM = "DELETE me.* FROM meeting_employee me "
-                + "JOIN meeting m ON me.meetingId = m.id WHERE m.roomId = ?";
+                + "JOIN meeting m ON me.meetingId = m.id "
+                + "WHERE m.roomId = ?";
         jdbc.update(DELETE_MEETING_EMPLOYEE_BY_ROOM, id);
         
-        final String DELETE_MEETING_BY_ROOM = "DELETE FROM meeting WHERE roomId = ?";
+        //delete from meeting
+        final String DELETE_MEETING_BY_ROOM = "DELETE FROM meeting "
+                + "WHERE roomId = ?";
         jdbc.update(DELETE_MEETING_BY_ROOM, id);
         
-        final String DELETE_ROOM = "DELETE FROM room WHERE id = ?";
+        //finally, delete room
+        final String DELETE_ROOM = "DELETE FROM room "
+                + "WHERE id = ?";
         jdbc.update(DELETE_ROOM, id);
     }
     
