@@ -126,10 +126,16 @@ public class GameDaoTest {
     @Test
     public void testCreateReadGame() {
         //arrange
+        Game game1 = gameDao.createGame(g1);
+        Game game2 = gameDao.createGame(g2);
         
         //act
+        Game firstFromDao = gameDao.readGameById(g1.getGameId());
+        Game secondFromDao = gameDao.readGameById(g2.getGameId());
         
         //assert
+        assertEquals(game1, firstFromDao);
+        assertEquals(game2, secondFromDao);
     }
 
     /**
@@ -138,10 +144,16 @@ public class GameDaoTest {
     @Test
     public void testReadAllGames() {
         //arrange
+        Game game1 = gameDao.createGame(g1);
+        Game game2 = gameDao.createGame(g2);
         
         //act
+        List<Game> allGames = gameDao.readAllGames();
         
         //assert
+        assertEquals(2, allGames.size());
+        assertTrue(allGames.contains(game1));
+        assertTrue(allGames.contains(game2));
     }
 
     /**
@@ -150,10 +162,25 @@ public class GameDaoTest {
     @Test
     public void testUpdateGame() {
         //arrange
+        Game g1update = new Game();
+        g1update.setGameId(g1.getGameId());
+        g1update.setAnswer(g1.getAnswer());
+        g1update.setIsFinished(g1.isIsFinished());
+        List<Round> g1uRound = new ArrayList<>();
+        g1uRound.add(r1update);
+        g1update.setRounds(g1uRound);
         
         //act
+        Game game1 = gameDao.createGame(g1);
+        Game original = gameDao.readGameById(g1.getGameId());
+        
+        boolean updated = gameDao.updateGame(g1update);
+        Game edited = gameDao.readGameById(g1.getGameId());
         
         //assert
+        assertTrue(updated);
+        assertNotEquals(original, edited);
+        assertEquals(original.getGameId(), edited.getGameId());
     }
 
     /**
@@ -162,10 +189,23 @@ public class GameDaoTest {
     @Test
     public void testDeleteGameById() {
         //arrange
+        Game game1 = gameDao.createGame(g1);
+        Game game2 = gameDao.createGame(g2);
         
         //act
+        List<Game> preDelete = gameDao.readAllGames();
+        
+        boolean deleted = gameDao.deleteGameById(game1.getGameId());
+        List<Game> postDelete = gameDao.readAllGames();
+        Game firstFromDao = gameDao.readGameById(game1.getGameId());
+        Game secondFromDao = gameDao.readGameById(game2.getGameId());
         
         //assert
+        assertEquals(2, preDelete.size());
+        assertTrue(deleted);
+        assertEquals(1, postDelete.size());
+        assertNull(firstFromDao);
+        assertNotNull(secondFromDao);
     }
 
     /**
@@ -174,10 +214,20 @@ public class GameDaoTest {
     @Test
     public void testReadRoundsForGame() {
         //arrange
+        Game game1 = gameDao.createGame(g1);
+        Game game2 = gameDao.createGame(g2);
         
         //act
+        List<Round> g1Rounds = gameDao.readRoundsForGame(game1);
+        List<Round> g2Rounds = gameDao.readRoundsForGame(game2);
         
         //assert
+        assertEquals(2, g1Rounds.size());
+        assertTrue(g1Rounds.contains(r1));
+        assertTrue(g1Rounds.contains(r2));
+        
+        assertEquals(1, g2Rounds.size());
+        assertTrue(g2Rounds.contains(r3));
     }
 
 }
