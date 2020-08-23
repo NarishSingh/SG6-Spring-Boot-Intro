@@ -4,6 +4,7 @@ import com.sg.m2a.TestApplicationConfiguration;
 import com.sg.m2a.models.Game;
 import com.sg.m2a.models.Round;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -26,6 +27,7 @@ public class RoundDaoTest {
     @Autowired
     RoundDao roundDao;
     
+    static Game g1;
     static Round r1;
     static Round r1update;
     static Round r2;
@@ -40,26 +42,34 @@ public class RoundDaoTest {
         final String FIRST_GUESS_UPDATE = "1111"; //fail, 1 exact
         final String SECOND_GUESS = "1234"; //correct
         
-        //test obj's
+        //game obj's
+        g1 = new Game();
+        g1.setGameId(FIRST_GAME);
+        g1.setAnswer(SECOND_GUESS);
+        g1.setIsFinished(false);
+        List<Round> gameRounds = new ArrayList<>();
+        g1.setRounds(gameRounds); //empty
+        
+        //round obj's
         r1 = new Round();
         r1.setRoundId(1);
         r1.setGameId(FIRST_GAME);
         r1.setGuess(FIRST_GUESS);
-        r1.setTime(LocalDateTime.MIN);
+        r1.setTime(LocalDateTime.now());
         r1.setDigitMatches("e:0:p:3");
         
         r1update = new Round();
         r1update.setRoundId(1);
         r1update.setGameId(FIRST_GAME);
         r1update.setGuess(FIRST_GUESS_UPDATE);
-        r1update.setTime(LocalDateTime.MIN.plusMinutes(1)); //1 min after minimum
+        r1update.setTime(LocalDateTime.now().plusMinutes(1)); //1 min after minimum
         r1update.setDigitMatches("e:0:p:3");
         
         r2 = new Round();
         r2.setRoundId(2);
         r2.setGameId(FIRST_GAME);
         r2.setGuess(SECOND_GUESS);
-        r2.setTime(LocalDateTime.MIN.plusMinutes(2));
+        r2.setTime(LocalDateTime.now().plusMinutes(2));
         r2.setDigitMatches("e:4:p:0");
     }
     
@@ -79,6 +89,9 @@ public class RoundDaoTest {
         for (Game game : games) {
             gameDao.deleteGameById(game.getGameId());
         }
+        
+        //add the only game
+        gameDao.createGame(g1);
     }
     
     @After
@@ -90,6 +103,7 @@ public class RoundDaoTest {
      */
     @Test
     public void testCreateReadRound() {
+        //FIXME how do you insert when there is a fk???
         //arrange
         Round r = roundDao.createRound(r1);
         

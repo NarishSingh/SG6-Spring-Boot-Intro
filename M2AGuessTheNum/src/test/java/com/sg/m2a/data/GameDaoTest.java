@@ -54,21 +54,21 @@ public class GameDaoTest {
         r1.setRoundId(1);
         r1.setGameId(FIRST_GAME);
         r1.setGuess(FIRST_GUESS);
-        r1.setTime(LocalDateTime.MIN);
+        r1.setTime(LocalDateTime.now());
         r1.setDigitMatches("e:0:p:3"); //fail
         
         r1update = new Round();
         r1update.setRoundId(1);
         r1update.setGameId(FIRST_GAME);
         r1update.setGuess(FIRST_GUESS_UPDATE);
-        r1update.setTime(LocalDateTime.MIN.plusMinutes(1));
+        r1update.setTime(LocalDateTime.now().plusMinutes(1));
         r1update.setDigitMatches("e:1:p:0"); //fail
         
         r2 = new Round();
         r2.setRoundId(2);
         r2.setGameId(FIRST_GAME);
         r2.setGuess(SECOND_GUESS);
-        r2.setTime(LocalDateTime.MIN.plusMinutes(2));
+        r2.setTime(LocalDateTime.now().plusMinutes(2));
         r2.setDigitMatches("e:4:p:0"); //pass
         
         //g2
