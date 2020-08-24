@@ -73,7 +73,7 @@ public class RoundDaoDB implements RoundDao {
         return jdbc.update(updateQuery,
                 roundUpdate.getGuess(),
                 roundUpdate.getDigitMatches(),
-                roundUpdate.getRoundId()) == 1; //true if only that round row effected
+                roundUpdate.getRoundId()) == 1; //true iff that round row effected
     }
 
     @Override

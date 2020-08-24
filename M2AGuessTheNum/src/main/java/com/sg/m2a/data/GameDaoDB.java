@@ -1,10 +1,12 @@
 package com.sg.m2a.data;
 
+import com.sg.m2a.data.RoundDaoDB.RoundMapper;
 import com.sg.m2a.models.Game;
 import com.sg.m2a.models.Round;
 import java.sql.*;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -39,7 +41,14 @@ public class GameDaoDB implements GameDao {
 
     @Override
     public Game readGameById(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            String readQuery = "SELECT * FROM game "
+                    + "WHERE gameId = ?;";
+
+            return jdbc.queryForObject(readQuery, new GameMapper(), id);
+        } catch (DataAccessException e) {
+            return null;
+        }
     }
 
     @Override
@@ -51,7 +60,12 @@ public class GameDaoDB implements GameDao {
 
     @Override
     public boolean updateGame(Game game) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String updateQuery = "UPDATE game "
+                + "SET isFinished = ?;";
+        
+        associateRoundsWithGame(game);
+        
+        return jdbc.update(updateQuery, game.isIsFinished()) == 1; //true iff that game row effected
     }
 
     @Override
@@ -63,8 +77,16 @@ public class GameDaoDB implements GameDao {
     }
 
     @Override
-    public List<Round> readRoundsForGame(Game game) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<Round> associateRoundsWithGame(Game game) {
+        String roundsForGameQuery = "SELECT * FROM round "
+                + "WHERE gameId = ?;";
+        
+        List<Round> rounds = jdbc.query(roundsForGameQuery, 
+                new RoundMapper(), game.getGameId());
+        
+        game.setRounds(rounds); //update rounds to POJO not db
+        
+        return rounds;
     }
 
     /**

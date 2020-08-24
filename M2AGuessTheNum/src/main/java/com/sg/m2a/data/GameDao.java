@@ -30,7 +30,7 @@ public interface GameDao {
     List<Game> readAllGames();
 
     /**
-     * Update an existing game
+     * Update an existing game's status and rounds
      *
      * @param game {Game} the replacement obj to be stored
      * @return {boolean} true if game exists and is updated
@@ -51,6 +51,6 @@ public interface GameDao {
      * @param game {Game} a in-progress or completed game
      * @return {List} all rounds played to date for a game
      */
-    List<Round> readRoundsForGame(Game game);
+    List<Round> associateRoundsWithGame(Game game);
     
 }
