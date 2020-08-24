@@ -10,7 +10,7 @@ USE guessDB;
 CREATE TABLE game(
     gameId INT PRIMARY KEY AUTO_INCREMENT,
     answer CHAR(4) NOT NULL,
-    isFinished TINYINT(1) NOT NULL DEFAULT 0
+    isFinished BIT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE round(

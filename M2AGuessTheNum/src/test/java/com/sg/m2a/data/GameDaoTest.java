@@ -3,14 +3,9 @@ package com.sg.m2a.data;
 import com.sg.m2a.TestApplicationConfiguration;
 import com.sg.m2a.models.Game;
 import com.sg.m2a.models.Round;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +22,11 @@ public class GameDaoTest {
     @Autowired
     RoundDao roundDao;
     
-    static Round r1;
-    static Round r1update;
-    static Round r2;
-    static Round r3;
-    static Game g1;
-    static Game g2;
+    static Game game1;
+    static Game game2;
+    static Round round1;
+    static Round round2;
+    static Round round3;
     
     public GameDaoTest() {
     }
@@ -59,8 +53,6 @@ public class GameDaoTest {
         }
         
         /*obj creation*/
-        final int FIRST_GAME = 1;
-        final int SECOND_GAME = 2;
         final String G1_ANSWER = "1234";
         final String G2_ANSWER = "2345";
         
@@ -68,72 +60,93 @@ public class GameDaoTest {
         final String FIRST_GUESS_UPDATE = "1111"; //fail, 1 exact for g1
         final String SECOND_GUESS = "1234"; //correct for g1
         
+        /*game obj's*/
+        Game g1 = new Game();
+        g1.setAnswer(G1_ANSWER);
+        g1.setIsFinished(false);
+        
+        Game g2 = new Game();
+        g2.setAnswer(G2_ANSWER);
+        g2.setIsFinished(false);
+
+        /*game creation*/
+        game1 = gameDao.createGame(g1);
+        game2 = gameDao.createGame(g2);
+        
         /*round obj's*/
         //g1
-        r1 = new Round();
-        r1.setRoundId(1);
-        r1.setGameId(FIRST_GAME);
+        Round r1 = new Round();
+        r1.setGameId(game1.getGameId());
         r1.setGuess(FIRST_GUESS);
-        r1.setTime(LocalDateTime.now());
         r1.setDigitMatches("e:0:p:3"); //fail
         
-        r1update = new Round();
+        Round r1update = new Round();
         r1update.setRoundId(1);
-        r1update.setGameId(FIRST_GAME);
+        r1update.setGameId(game1.getGameId());
         r1update.setGuess(FIRST_GUESS_UPDATE);
-        r1update.setTime(LocalDateTime.now().plusMinutes(1));
         r1update.setDigitMatches("e:1:p:0"); //fail
         
-        r2 = new Round();
+        Round r2 = new Round();
         r2.setRoundId(2);
-        r2.setGameId(FIRST_GAME);
+        r2.setGameId(game1.getGameId());
         r2.setGuess(SECOND_GUESS);
-        r2.setTime(LocalDateTime.now().plusMinutes(2));
         r2.setDigitMatches("e:4:p:0"); //pass
         
         //g2
-        r3 = new Round();
+        Round r3 = new Round();
         r3.setRoundId(3);
-        r3.setGameId(SECOND_GAME);
+        r3.setGameId(game2.getGameId());
         r3.setGuess(FIRST_GUESS);
-        r3.setTime(LocalDateTime.MIN);
         r3.setDigitMatches("e:4:p:0"); //pass
         
-        /*game obj's*/
-        g1 = new Game();
-        g1.setGameId(FIRST_GAME);
-        g1.setAnswer(G1_ANSWER);
-        g1.setIsFinished(false);
-        List<Round> g1Rounds = new ArrayList<>();
-        g1Rounds.add(r1);
-        g1Rounds.add(r2);
-        g1.setRounds(g1Rounds);
+        /*round creation*/
+        round1 = roundDao.createRound(r1);
+        round2 = roundDao.createRound(r2);
+        round3 = roundDao.createRound(r3);
         
-        g2 = new Game();
-        g2.setGameId(SECOND_GAME);
-        g2.setAnswer(G2_ANSWER);
-        g2.setIsFinished(false);
+        /*round addition*/
+        List<Round> g1Rounds = new ArrayList<>();
+        g1Rounds.add(round1);
+        g1Rounds.add(round2);
+        game1.setRounds(g1Rounds);
+
         List<Round> g2Rounds = new ArrayList<>();
-        g2Rounds.add(r3);
-        g2.setRounds(g2Rounds);
+        g2Rounds.add(round3);
+        game2.setRounds(g2Rounds);
     }
     
     @After
     public void tearDown() {
     }
-
+    
     /**
      * Test of createGame method, of class GameDao.
      */
     @Test
-    public void testCreateReadGame() {
+    public void testCreateGame() {
         //arrange
-        Game game1 = gameDao.createGame(g1);
-        Game game2 = gameDao.createGame(g2);
+        Game g = new Game();
+        g.setAnswer("9999");
         
         //act
-        Game firstFromDao = gameDao.readGameById(g1.getGameId());
-        Game secondFromDao = gameDao.readGameById(g2.getGameId());
+        Game newGame = gameDao.createGame(g);
+        
+        //assert
+        assertNotNull(newGame);
+        assertEquals(newGame.getAnswer(), g.getAnswer());
+        assertEquals(newGame.isIsFinished(), false);
+    }
+
+    /**
+     * Test of readGameById method, of class GameDao.
+     */
+    @Test
+    public void testReadGameById() {
+        //arrange done in setup
+        
+        //act
+        Game firstFromDao = gameDao.readGameById(game1.getGameId());
+        Game secondFromDao = gameDao.readGameById(game2.getGameId());
         
         //assert
         assertEquals(game1, firstFromDao);
@@ -145,9 +158,7 @@ public class GameDaoTest {
      */
     @Test
     public void testReadAllGames() {
-        //arrange
-        Game game1 = gameDao.createGame(g1);
-        Game game2 = gameDao.createGame(g2);
+        //arrange done in setup
         
         //act
         List<Game> allGames = gameDao.readAllGames();

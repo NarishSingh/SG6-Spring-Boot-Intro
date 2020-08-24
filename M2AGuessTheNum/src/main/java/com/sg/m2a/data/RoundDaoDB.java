@@ -5,6 +5,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -20,6 +21,8 @@ public class RoundDaoDB implements RoundDao {
     @Override
     @Transactional
     public Round createRound(Round newRound) {
+        newRound.setTime(LocalDateTime.now().withNano(0));
+
         //insert to db using a keyholder
         String insertQuery = "INSERT INTO round(gameId, guess, time, digitMatches) "
                 + "VALUES(?,?,?,?);";
@@ -30,7 +33,7 @@ public class RoundDaoDB implements RoundDao {
 
             stmt.setInt(1, newRound.getGameId());
             stmt.setString(2, newRound.getGuess());
-            stmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now().withNano(0)));
+            stmt.setTimestamp(3, Timestamp.valueOf(newRound.getTime()));
             stmt.setString(4, newRound.getDigitMatches());
 
             return stmt;
@@ -44,10 +47,14 @@ public class RoundDaoDB implements RoundDao {
 
     @Override
     public Round readRoundById(int id) {
-        String readQuery = "SELECT roundId, gameId, guess, time, digitMatches FROM round "
-                + "WHERE roundId = ?;";
+        try {
+            String readQuery = "SELECT * FROM round "
+                    + "WHERE roundId = ?;";
 
-        return jdbc.queryForObject(readQuery, new RoundMapper(), id);
+            return jdbc.queryForObject(readQuery, new RoundMapper(), id);
+        } catch (DataAccessException e) {
+            return null;
+        }
     }
 
     @Override
@@ -89,6 +96,7 @@ public class RoundDaoDB implements RoundDao {
             r.setGameId(rs.getInt("gameId"));
             r.setGuess(rs.getString("guess"));
             r.setTime(rs.getTimestamp("time").toLocalDateTime());
+//            r.setTime(rs.getObject("time", LocalDateTime.class)); //if line 99 doesn't work use this
             r.setDigitMatches(rs.getString("digitMatches"));
 
             return r;

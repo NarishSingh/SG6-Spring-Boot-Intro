@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.sg.m2a.data;
 
 import com.sg.m2a.models.Game;
@@ -82,7 +77,7 @@ public class GameDaoDB implements GameDao {
             Game g = new Game();
             g.setGameId(rs.getInt("gameId"));
             g.setAnswer(rs.getString("answer"));
-            g.setIsFinished(rs.getBoolean("isFinished")); //FIXME verify if this is right
+            g.setIsFinished(rs.getBoolean("isFinished")); //should work now that its bit
 
             return g;
         }
