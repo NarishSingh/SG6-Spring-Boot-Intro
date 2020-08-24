@@ -2,6 +2,7 @@ package com.sg.m2a.data;
 
 import com.sg.m2a.models.Round;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,20 +20,6 @@ public class RoundDaoDB implements RoundDao {
     @Override
     @Transactional
     public Round createRound(Round newRound) {
-        //select and insert to game first
-        /*
-        String selectGameQuery = "SELECT gameId, answer, isFinished FROM game "
-                + "WHERE gameId = ?;";
-        Game roundGame = jdbc.queryForObject(selectGameQuery, new GameMapper(), newRound.getGameId());
-        
-        String gameQuery = "INSERT INTO game(gameId, answer, isFinished) "
-                + "VALUES(?,?,?);";
-        jdbc.update(gameQuery, 
-                roundGame.getGameId(),
-                roundGame.getAnswer(),
-                roundGame.isIsFinished());
-         */
-
         //insert to db using a keyholder
         String insertQuery = "INSERT INTO round(gameId, guess, time, digitMatches) "
                 + "VALUES(?,?,?,?);";
@@ -43,7 +30,7 @@ public class RoundDaoDB implements RoundDao {
 
             stmt.setInt(1, newRound.getGameId());
             stmt.setString(2, newRound.getGuess());
-            stmt.setTimestamp(3, Timestamp.valueOf(newRound.getTime()));
+            stmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now().withNano(0)));
             stmt.setString(4, newRound.getDigitMatches());
 
             return stmt;
@@ -71,8 +58,15 @@ public class RoundDaoDB implements RoundDao {
     }
 
     @Override
-    public boolean updateRound(Round round) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean updateRound(Round roundUpdate) {
+        String updateQuery = "UPDATE round "
+                + "SET guess = ?, digitMatches = ? "
+                + "WHERE roundId = ?;";
+
+        return jdbc.update(updateQuery,
+                roundUpdate.getGuess(),
+                roundUpdate.getDigitMatches(),
+                roundUpdate.getRoundId()) == 1; //true if only that round row effected
     }
 
     @Override

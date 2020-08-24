@@ -39,6 +39,26 @@ public class GameDaoTest {
     
     @BeforeClass
     public static void setUpClass() {
+    }
+    
+    @AfterClass
+    public static void tearDownClass() {
+    }
+    
+    @Before
+    public void setUp() {
+        /*clear db*/
+        List<Round> rounds = roundDao.readAllRounds();
+        for (Round round : rounds) {
+            roundDao.deleteRoundByID(round.getRoundId());
+        }
+        
+        List<Game> games = gameDao.readAllGames();
+        for (Game game : games) {
+            gameDao.deleteGameById(game.getGameId());
+        }
+        
+        /*obj creation*/
         final int FIRST_GAME = 1;
         final int SECOND_GAME = 2;
         final String G1_ANSWER = "1234";
@@ -96,24 +116,6 @@ public class GameDaoTest {
         List<Round> g2Rounds = new ArrayList<>();
         g2Rounds.add(r3);
         g2.setRounds(g2Rounds);
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() {
-        //clear db
-        List<Round> rounds = roundDao.readAllRounds();
-        for (Round round : rounds) {
-            roundDao.deleteRoundByID(round.getRoundId());
-        }
-        
-        List<Game> games = gameDao.readAllGames();
-        for (Game game : games) {
-            gameDao.deleteGameById(game.getGameId());
-        }
     }
     
     @After
