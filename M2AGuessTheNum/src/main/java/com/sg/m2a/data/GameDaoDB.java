@@ -23,7 +23,7 @@ public class GameDaoDB implements GameDao {
         String gameQuery = "INSERT INTO game(answer) "
                 + "VALUES(?);";
 
-        //insert w answer, default will initialize isFinished to 0/false
+        //insert w answer, defaults will initialize isFinished to 0/false, time to now()
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update(((conn) -> {
             PreparedStatement stmt = conn.prepareStatement(gameQuery, Statement.RETURN_GENERATED_KEYS);

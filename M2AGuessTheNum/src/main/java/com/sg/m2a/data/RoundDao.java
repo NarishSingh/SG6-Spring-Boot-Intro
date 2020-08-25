@@ -22,7 +22,7 @@ public interface RoundDao {
     Round readRoundById(int id);
 
     /**
-     * Get all rounds played
+     * Get all rounds played, regardless of game
      *
      * @return {List} all rounds played to date
      */
