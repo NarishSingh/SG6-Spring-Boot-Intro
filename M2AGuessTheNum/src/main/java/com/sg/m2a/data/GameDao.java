@@ -23,17 +23,18 @@ public interface GameDao {
     Game readGameById(int id);
 
     /**
-     * Find all games to date stored in db
+     * Find all games to date
      *
-     * @return {List} all games played until that point
+     * @return {List} all active or completed games played
      */
     List<Game> readAllGames();
 
     /**
-     * Update an existing game's status and rounds
+     * Update an existing game's status in db and associate its rounds to obj in
+     * memory
      *
-     * @param game {Game} the replacement obj to be stored
-     * @return {boolean} true if game exists and is updated
+     * @param game {Game} a in-progress or completed game
+     * @return {boolean} true if game exists and is updated in db
      */
     boolean updateGame(Game game);
 
@@ -46,11 +47,11 @@ public interface GameDao {
     boolean deleteGameById(int id);
 
     /**
-     * Read all rounds played for a game
+     * Load all rounds played for a game to memory
      *
      * @param game {Game} a in-progress or completed game
      * @return {List} all rounds played to date for a game
      */
     List<Round> associateRoundsWithGame(Game game);
-    
+
 }
