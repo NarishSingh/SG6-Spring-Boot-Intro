@@ -23,7 +23,7 @@ public class GameDaoDB implements GameDao {
         String gameQuery = "INSERT INTO game(answer) "
                 + "VALUES(?);";
 
-        //insert w answer, default will initialize isFinished to false
+        //insert w answer, default will initialize isFinished to 0/false
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update(((conn) -> {
             PreparedStatement stmt = conn.prepareStatement(gameQuery, Statement.RETURN_GENERATED_KEYS);
@@ -62,30 +62,40 @@ public class GameDaoDB implements GameDao {
     public boolean updateGame(Game game) {
         String updateQuery = "UPDATE game "
                 + "SET isFinished = ?;";
-        
+
         associateRoundsWithGame(game);
-        
-        return jdbc.update(updateQuery, game.isIsFinished()) == 1; //true iff that game row effected
+
+        if (game.isIsFinished() == true) {
+            jdbc.update(updateQuery, 1); //anything but 0 = true
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean deleteGameById(int id) {
-        String deleteQuery = "DELETE FROM game "
+        //delete related rounds by fk
+        String deleteRoundQuery = "DELETE FROM round "
+                + "WHERE gameId = ?;";
+        jdbc.update(deleteRoundQuery, id);
+
+        String deleteGameQuery = "DELETE FROM game "
                 + "WHERE gameId = ?;";
 
-        return jdbc.update(deleteQuery, id) > 0;
+        return jdbc.update(deleteGameQuery, id) > 0;
     }
 
     @Override
     public List<Round> associateRoundsWithGame(Game game) {
         String roundsForGameQuery = "SELECT * FROM round "
                 + "WHERE gameId = ?;";
-        
-        List<Round> rounds = jdbc.query(roundsForGameQuery, 
+
+        List<Round> rounds = jdbc.query(roundsForGameQuery,
                 new RoundMapper(), game.getGameId());
-        
+
         game.setRounds(rounds); //update rounds to POJO not db
-        
+
         return rounds;
     }
 
