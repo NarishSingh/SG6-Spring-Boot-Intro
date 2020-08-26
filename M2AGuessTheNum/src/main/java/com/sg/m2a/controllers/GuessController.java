@@ -3,7 +3,7 @@ package com.sg.m2a.controllers;
 import com.sg.m2a.models.Game;
 import com.sg.m2a.models.Round;
 import com.sg.m2a.service.DuplicateDigitEntryException;
-import com.sg.m2a.service.GuessService;
+import com.sg.m2a.service.GuessServiceImpl;
 import com.sg.m2a.service.NotFoundException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class GuessController {
 
     @Autowired
-    GuessService serv;
+    GuessServiceImpl serv;
 
     /**
      * Starts a new game
