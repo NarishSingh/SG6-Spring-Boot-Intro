@@ -27,7 +27,6 @@ public class GameDaoDB implements GameDao {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update(((conn) -> {
             PreparedStatement stmt = conn.prepareStatement(gameQuery, Statement.RETURN_GENERATED_KEYS);
-
             stmt.setString(1, newGame.getAnswer());
 
             return stmt;
@@ -75,7 +74,7 @@ public class GameDaoDB implements GameDao {
 
     @Override
     public boolean deleteGameById(int id) {
-        //delete related rounds by fk
+        //delete related rounds by fk first
         String deleteRoundQuery = "DELETE FROM round "
                 + "WHERE gameId = ?;";
         jdbc.update(deleteRoundQuery, id);
@@ -109,7 +108,7 @@ public class GameDaoDB implements GameDao {
             Game g = new Game();
             g.setGameId(rs.getInt("gameId"));
             g.setAnswer(rs.getString("answer"));
-            g.setIsFinished(rs.getBoolean("isFinished")); //should work now that its bit
+            g.setIsFinished(rs.getBoolean("isFinished"));
 
             return g;
         }

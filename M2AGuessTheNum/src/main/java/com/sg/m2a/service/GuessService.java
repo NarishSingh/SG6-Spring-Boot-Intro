@@ -5,11 +5,7 @@ import com.sg.m2a.data.RoundDao;
 import com.sg.m2a.models.Game;
 import com.sg.m2a.models.Round;
 import com.sg.m2a.models.RoundVM;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +21,8 @@ public class GuessService {
     /*Regular model methods*/
     /**
      * Start a new Game and generate an answer
-     * @return {Game} a fully formed Game obj, 
+     *
+     * @return {Game} a fully formed Game obj,
      */
     public Game newGame() {
         Game newGame = new Game();
@@ -36,10 +33,70 @@ public class GuessService {
         while (ansSet.size() < 4) {
             ansSet.add(rng.nextInt(10));
         }
-        
+
         newGame.setAnswer(ansSet.toString());
 
         return gameDao.createGame(newGame);
+    }
+
+    public Round guess(String guess, int gameId) throws DuplicateDigitEntryException {
+        validateGuess(guess);
+
+        /*round creation*/
+        Round round = new Round();
+        round.setGuess(guess);
+        round.setGameId(gameId);
+
+        /*results -  if correct, mark game as finished**/
+        Game game = gameDao.readGameById(gameId);
+
+        if (game.getAnswer().equals(round.getGuess())) {
+            game.setIsFinished(true);
+            round.setDigitMatches("e:4:p:0");
+        } else {
+            int exactCount = 0;
+            int partialCount = 0;
+
+            for (int i = 0; i < guess.length(); i++) {
+                if (guess.charAt(i) == game.getAnswer().charAt(i)) {
+                    exactCount++;
+                } else if (guess.contains(String.valueOf(game.getAnswer().charAt(i)))
+                        && guess.charAt(i) != game.getAnswer().charAt(i)) {
+                    partialCount++;
+                }
+            }
+
+            String resultString = String.format("e:%s:p:%s", exactCount, partialCount);
+            round.setDigitMatches(resultString);
+            game.setIsFinished(false);
+        }
+
+        /*update game, regardless*/
+        Round newRound = roundDao.createRound(round);
+        gameDao.updateGame(game); //updates status and associates rounds
+
+        return newRound;
+    }
+
+    /**
+     * Validate guess to ensure it has no duplicate digits
+     *
+     * @param guess {String} 4 digits entered by player
+     * @return {String} if valid, return the guess
+     * @throws DuplicateDigitEntryException if contains duplicate entries, throw
+     *                                      this
+     */
+    private String validateGuess(String guess) throws DuplicateDigitEntryException {
+        Set<Integer> guessSet = new TreeSet<>();
+        for (int i = 0; i < guess.length(); i++) {
+            guessSet.add(Integer.valueOf(guess.charAt(i)));
+        }
+
+        if (guessSet.size() != 4) {
+            throw new DuplicateDigitEntryException("No duplicate digits allowed.");
+        } else {
+            return guess;
+        }
     }
 
     /*View model methods*/

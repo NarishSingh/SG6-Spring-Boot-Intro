@@ -9,7 +9,7 @@ public class Round {
     private int gameId; //fk to Game table
     private String guess;
     private LocalDateTime time;
-    private String digitMatches; //coming from db
+    private String digitMatches;
 
     /*ctors*/
     public Round() {
