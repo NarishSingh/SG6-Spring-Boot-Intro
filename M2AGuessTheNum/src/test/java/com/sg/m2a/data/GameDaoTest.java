@@ -171,7 +171,7 @@ public class GameDaoTest {
         updatedRounds.add(round1); //fail
         updatedRounds.add(round2); //win
         game1.setRounds(updatedRounds);
-        game1.setIsFinished(true);
+        game1.setIsFinished(true); //manually done here, must be done automatically in service
 
         //act
         boolean updated = gameDao.updateGame(game1);
@@ -183,6 +183,7 @@ public class GameDaoTest {
         assertEquals(original.getGameId(), edited.getGameId());
         assertTrue(game1.getRounds().contains(round1));
         assertTrue(game1.getRounds().contains(round2));
+        assertTrue(game1.isIsFinished());
     }
 
     /**

@@ -59,12 +59,12 @@ public interface GuessService {
     /**
      * Validate guess to ensure it has no duplicate digits
      *
-     * @param guess {String} 4 digits entered by player
+     * @param guessAnswer {String} 4 digits entered by player or the answer generated
      * @return {String} if valid, return the guess
      * @throws DuplicateDigitEntryException if contains duplicate entries, throw
      *                                      this
      */
-    String validateGuess(String guess) throws DuplicateDigitEntryException;
+    String validateDigitSet(String guessAnswer) throws DuplicateDigitEntryException;
 
     /*View model methods*/
     /**

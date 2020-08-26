@@ -60,12 +60,15 @@ public class GameDaoDB implements GameDao {
     @Override
     public boolean updateGame(Game game) {
         String updateQuery = "UPDATE game "
-                + "SET isFinished = ?;";
+                + "SET isFinished = ? "
+                + "WHERE gameId = ?;";
 
         associateRoundsWithGame(game);
 
         if (game.isIsFinished() == true) {
-            jdbc.update(updateQuery, 1); //anything but 0 = true
+            jdbc.update(updateQuery,
+                    1, //anything but 0 in SQL = true
+                    game.getGameId());
             return true;
         } else {
             return false;

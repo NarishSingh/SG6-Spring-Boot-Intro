@@ -36,8 +36,12 @@ public class GuessServiceImpl implements GuessService {
         while (ansSet.size() < 4) {
             ansSet.add(rng.nextInt(10));
         }
-
-        newGame.setAnswer(ansSet.toString());
+        
+        String ansString = "";
+        for (Integer i : ansSet) {
+            ansString += i;
+        }
+        newGame.setAnswer(ansString);
 
         return gameDao.createGame(newGame);
     }
@@ -45,14 +49,14 @@ public class GuessServiceImpl implements GuessService {
     @Override
     public Round guess(String guess, int gameId) throws DuplicateDigitEntryException,
             NotFoundException {
-        validateGuess(guess);
+        validateDigitSet(guess);
 
         /*round creation*/
         Round round = new Round();
         round.setGuess(guess);
         round.setGameId(gameId);
 
-        /*results -  if correct, mark game as finished**/
+        /*results -  if correct, mark game as finished*/
         Game game = gameDao.readGameById(gameId);
         if (game == null) {
             throw new NotFoundException("Game doesn't exist");
@@ -133,7 +137,7 @@ public class GuessServiceImpl implements GuessService {
 
     /*helper methods*/
     @Override
-    public String validateGuess(String guess) throws DuplicateDigitEntryException {
+    public String validateDigitSet(String guess) throws DuplicateDigitEntryException {
         Set<Integer> guessSet = new TreeSet<>();
         for (int i = 0; i < guess.length(); i++) {
             guessSet.add(Integer.valueOf(guess.charAt(i)));
