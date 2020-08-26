@@ -17,8 +17,9 @@ public interface GameDao {
     /**
      * Find a game by its id
      *
-     * @param id {int} a game's id num, >0
-     * @return {Game} the game from db corresponding to that pk
+     * @param id {int} a game's id number, >0
+     * @return {Game} the game from db corresponding to that pk, null if game
+     *         doesn't exist
      */
     Game readGameById(int id);
 
@@ -49,7 +50,7 @@ public interface GameDao {
     /**
      * Load all rounds played for a game to memory
      *
-     * @param game {Game} a in-progress or completed game
+     * @param game {Game} an in-progress or completed game
      * @return {List} all rounds played to date for a game
      */
     List<Round> associateRoundsWithGame(Game game);
