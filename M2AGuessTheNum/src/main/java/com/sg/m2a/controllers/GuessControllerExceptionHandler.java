@@ -1,5 +1,6 @@
 package com.sg.m2a.controllers;
 
+import com.sg.m2a.service.DuplicateDigitEntryException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,19 +15,37 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class GuessControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
     /**
-     * Deal with HTTP responses for exceptions
+     * Deal with HTTP responses for SQL and db related exceptions
      *
-     * @param ex      {SQLIntegrityConstraintViolationException} any SQL and DB
-     *                related exception from API run
+     * @param ex      {SQLIntegrityConstraintViolationException} any exception
+     *                throw from API run
      * @param request {WebRequest}
-     * @return {ResponseEntity}
+     * @return {ResponseEntity} an http response with the exception throw
      */
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public final ResponseEntity<Error> handleSqlException(SQLIntegrityConstraintViolationException ex, WebRequest request) {
+    public final ResponseEntity<Error> handleSqlException(SQLIntegrityConstraintViolationException ex,
+            WebRequest request) {
         Error e = new Error();
         e.setMessage(ex.getMessage());
 
         return new ResponseEntity<>(e, HttpStatus.UNAUTHORIZED);
     }
-    
+
+    /**
+     * Deal with HTTP responses for fault guess entry exceptions
+     *
+     * @param ex      {DuplicateDigitEntryException} if any digit is repeated
+     *                within a consumer guess in a round
+     * @param request {WebRequest}
+     * @return {ResponseEntity} an http response with the exception throw
+     */
+    @ExceptionHandler(DuplicateDigitEntryException.class)
+    public final ResponseEntity<Error> handleDuplicateEntryException(DuplicateDigitEntryException ex,
+            WebRequest request) {
+        Error e = new Error();
+        e.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(e, HttpStatus.UNAUTHORIZED);
+    }
+
 }
