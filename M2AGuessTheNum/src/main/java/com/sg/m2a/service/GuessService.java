@@ -39,7 +39,19 @@ public class GuessService {
         return gameDao.createGame(newGame);
     }
 
-    public Round guess(String guess, int gameId) throws DuplicateDigitEntryException {
+    /**
+     * Play a round of an existing game
+     *
+     * @param guess  {String} a 4 digit guess from the consumer
+     * @param gameId {int} the id of an existing game
+     * @return {Round} a fully formed Round obj
+     * @throws DuplicateDigitEntryException if consumer's guess has duplicate
+     *                                      entries
+     * @throws NotFoundException            if consumer attempts to retrieve a
+     *                                      non-existing game
+     */
+    public Round guess(String guess, int gameId) throws DuplicateDigitEntryException,
+            NotFoundException {
         validateGuess(guess);
 
         /*round creation*/
@@ -49,6 +61,9 @@ public class GuessService {
 
         /*results -  if correct, mark game as finished**/
         Game game = gameDao.readGameById(gameId);
+        if (game == null) {
+            throw new NotFoundException("Game not found");
+        }
 
         if (game.getAnswer().equals(round.getGuess())) {
             game.setIsFinished(true);

@@ -2,7 +2,9 @@ package com.sg.m2a.controllers;
 
 import com.sg.m2a.models.Game;
 import com.sg.m2a.models.Round;
+import com.sg.m2a.service.DuplicateDigitEntryException;
 import com.sg.m2a.service.GuessService;
+import com.sg.m2a.service.NotFoundException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +26,7 @@ public class GuessController {
     @ResponseStatus(HttpStatus.CREATED)
     public int startGame() {
         Game beginGame = serv.newGame();
-        
+
         return beginGame.getGameId();
     }
 
@@ -34,16 +36,19 @@ public class GuessController {
      * @param guess  {String} guess with 4 unique digits passed in through JSON
      * @param gameId {int} game's id number passed in through JSON
      * @return {Round} the Round obj
+     * @throws DuplicateDigitEntryException if a guess has duplicate digits
+     * @throws NotFoundException            if game does not exist
      */
     @PostMapping("/guess")
-    public Round checkGuess(@RequestBody String guess, @RequestBody int gameId) {
-        //create round obj
-
-        //calc results of guess
-        
-        //if correct, mark game as finished
-        
-        //return round obj
+    public Round checkGuess(@RequestBody String guess, @RequestBody int gameId)
+            throws DuplicateDigitEntryException, NotFoundException {
+        try {
+            return serv.guess(guess, gameId);
+        } catch (DuplicateDigitEntryException e) {
+            throw new DuplicateDigitEntryException("Bad guess - No duplicate digits allowed", e);
+        } catch (NotFoundException e) {
+            throw new NotFoundException("Game doesn't exist", e);
+        }
     }
 
     /**
@@ -55,9 +60,8 @@ public class GuessController {
     @GetMapping("game")
     public List<Game> getAllGames() {
         //list of all games
-        
+
         //if game is finished, show answer
-        
         //else, no answer
     }
 
@@ -70,7 +74,7 @@ public class GuessController {
     @GetMapping("game/{gameId}")
     public Game getGameById(@PathVariable int id) {
         //read the game at the id
-        
+
         //if game is finished, show answer
         //else, no answer
     }
