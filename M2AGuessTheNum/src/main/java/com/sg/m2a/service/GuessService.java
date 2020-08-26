@@ -5,7 +5,9 @@ import com.sg.m2a.data.RoundDao;
 import com.sg.m2a.models.Game;
 import com.sg.m2a.models.Round;
 import com.sg.m2a.models.RoundVM;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -91,6 +93,82 @@ public class GuessService {
         gameDao.updateGame(game); //updates status and associates rounds
 
         return newRound;
+    }
+
+    /**
+     * Retrieve a list of all games, regardless of status
+     *
+     * @return {List} a list of all games, unprocessed if game is completed, but
+     *         if game in-progress then answer data will be hidden
+     */
+    public List<Game> readAllGames() {
+        List<Game> allGames = gameDao.readAllGames();
+        List<Game> screenedGameList = new ArrayList<>();
+
+        for (Game game : allGames) {
+            if (game.isIsFinished()) {
+                screenedGameList.add(game);
+            } else {
+                //use an intermediary VM to hide answer
+                Game inProgress = new Game();
+                inProgress.setGameId(game.getGameId());
+                inProgress.setAnswer("GAME CURRENTLY IN-PROGRESS"); //hide answer
+                inProgress.setIsFinished(game.isIsFinished());
+                inProgress.setRounds(game.getRounds());
+
+                screenedGameList.add(inProgress);
+            }
+        }
+
+        return screenedGameList;
+    }
+
+    /**
+     * Retrieve information on a game
+     *
+     * @param gameId {int} the id number of an existing game
+     * @return {Game} the unprocessed obj is game is complete, answer data
+     *         hidden if game is in-progress
+     * @throws NotFoundException if game does not exist
+     */
+    public Game readGame(int gameId) throws NotFoundException {
+        Game game = gameDao.readGameById(gameId);
+
+        if (game == null) {
+            throw new NotFoundException("Game doesn't exist");
+        } else if (game.isIsFinished()) {
+            return game;
+        } else {
+            Game inProgress = new Game();
+            inProgress.setGameId(game.getGameId());
+            inProgress.setAnswer("GAME CURRENTLY IN-PROGRESS"); //hide answer
+            inProgress.setIsFinished(game.isIsFinished());
+            inProgress.setRounds(game.getRounds());
+
+            return inProgress;
+        }
+    }
+
+    /**
+     * Read all rounds for a game
+     *
+     * @param gameId {int} the id number for an existing game
+     * @return {List} all rounds sorted by time
+     * @throws NotFoundException if game doesn't exist
+     */
+    public List<Round> readGameRounds(int gameId) throws NotFoundException {
+        Game game = gameDao.readGameById(gameId);
+        if (game == null) {
+            throw new NotFoundException("Game doesn't exist");
+        }
+
+        List<Round> rounds = gameDao.associateRoundsWithGame(game);
+
+        List<Round> sortedTime = rounds.stream()
+                .sorted(Comparator.comparing(Round::getTime))
+                .collect(Collectors.toList());
+
+        return sortedTime;
     }
 
     /**

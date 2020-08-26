@@ -64,5 +64,5 @@ public class GuessControllerExceptionHandler extends ResponseEntityExceptionHand
 
         return new ResponseEntity<>(e, HttpStatus.NOT_FOUND);
     }
-    
+
 }

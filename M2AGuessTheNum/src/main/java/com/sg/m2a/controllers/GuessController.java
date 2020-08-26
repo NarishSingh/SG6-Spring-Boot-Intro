@@ -37,7 +37,8 @@ public class GuessController {
      * @param gameId {int} game's id number passed in through JSON
      * @return {Round} the Round obj
      * @throws DuplicateDigitEntryException if a guess has duplicate digits
-     * @throws NotFoundException            if game does not exist
+     * @throws NotFoundException            if consumer requests a game that
+     *                                      doesn't exist
      */
     @PostMapping("/guess")
     public Round checkGuess(@RequestBody String guess, @RequestBody int gameId)
@@ -59,10 +60,7 @@ public class GuessController {
      */
     @GetMapping("game")
     public List<Game> getAllGames() {
-        //list of all games
-
-        //if game is finished, show answer
-        //else, no answer
+        return serv.readAllGames();
     }
 
     /**
@@ -70,25 +68,30 @@ public class GuessController {
      *
      * @param id {int} gameId of a existing game
      * @return {Game} the obj stored at that id
+     * @throws NotFoundException if consumer requests a game that doesn't exist
      */
     @GetMapping("game/{gameId}")
-    public Game getGameById(@PathVariable int id) {
-        //read the game at the id
-
-        //if game is finished, show answer
-        //else, no answer
+    public Game getGameById(@PathVariable int id) throws NotFoundException {
+        try {
+            return serv.readGame(id);
+        } catch (NotFoundException e) {
+            throw new NotFoundException("Game doesn't exist", e);
+        }
     }
 
     /**
      * Get all rounds for an in progress or completed game
      *
-     * @param id {int} gameId of a existing game
+     * @param gameId {int} gameId of a existing game
      * @return {List} a game's rounds sorted by time
      */
     @GetMapping("rounds/{gameId}")
-    public List<Round> getGameRounds(@PathVariable int id) {
-        //get all rounds at the game id
-        //make sure they are all sorted by time
+    public List<Round> getGameRounds(@PathVariable int gameId) throws NotFoundException {
+        try {
+            return serv.readGameRounds(gameId);
+        } catch (NotFoundException e) {
+            throw new NotFoundException("Game doesn't exist", e);
+        }
     }
 
 }
