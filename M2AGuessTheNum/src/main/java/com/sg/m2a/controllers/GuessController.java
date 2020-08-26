@@ -84,6 +84,7 @@ public class GuessController {
      *
      * @param gameId {int} gameId of a existing game
      * @return {List} a game's rounds sorted by time
+     * @throws NotFoundException if consumer requests a game that doesn't exist
      */
     @GetMapping("rounds/{gameId}")
     public List<Round> getGameRounds(@PathVariable int gameId) throws NotFoundException {

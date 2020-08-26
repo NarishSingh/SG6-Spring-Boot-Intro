@@ -5,7 +5,6 @@ import com.sg.m2a.data.RoundDao;
 import com.sg.m2a.models.Game;
 import com.sg.m2a.models.Round;
 import com.sg.m2a.models.RoundVM;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +63,7 @@ public class GuessService {
         /*results -  if correct, mark game as finished**/
         Game game = gameDao.readGameById(gameId);
         if (game == null) {
-            throw new NotFoundException("Game not found");
+            throw new NotFoundException("Game doesn't exist");
         }
 
         if (game.getAnswer().equals(round.getGuess())) {
@@ -88,7 +87,7 @@ public class GuessService {
             game.setIsFinished(false);
         }
 
-        /*update game, regardless*/
+        /*update game obj + game/round db's regardless of status*/
         Round newRound = roundDao.createRound(round);
         gameDao.updateGame(game); //updates status and associates rounds
 
@@ -109,14 +108,7 @@ public class GuessService {
             if (game.isIsFinished()) {
                 screenedGameList.add(game);
             } else {
-                //use an intermediary VM to hide answer
-                Game inProgress = new Game();
-                inProgress.setGameId(game.getGameId());
-                inProgress.setAnswer("GAME CURRENTLY IN-PROGRESS"); //hide answer
-                inProgress.setIsFinished(game.isIsFinished());
-                inProgress.setRounds(game.getRounds());
-
-                screenedGameList.add(inProgress);
+                screenedGameList.add(screenInProgressGame(game)); //hide answer
             }
         }
 
@@ -139,13 +131,7 @@ public class GuessService {
         } else if (game.isIsFinished()) {
             return game;
         } else {
-            Game inProgress = new Game();
-            inProgress.setGameId(game.getGameId());
-            inProgress.setAnswer("GAME CURRENTLY IN-PROGRESS"); //hide answer
-            inProgress.setIsFinished(game.isIsFinished());
-            inProgress.setRounds(game.getRounds());
-
-            return inProgress;
+            return screenInProgressGame(game); //hide answer
         }
     }
 
@@ -171,6 +157,7 @@ public class GuessService {
         return sortedTime;
     }
 
+    /*helper methods*/
     /**
      * Validate guess to ensure it has no duplicate digits
      *
@@ -193,6 +180,22 @@ public class GuessService {
     }
 
     /*View model methods*/
+    /**
+     * Create VM to hide the answer of an in-progress game
+     *
+     * @param game {Game} and in-progress game obj
+     * @return {Game} a VM of the obj with its answer hidden
+     */
+    private Game screenInProgressGame(Game game) {
+        Game inProgress = new Game();
+        inProgress.setGameId(game.getGameId());
+        inProgress.setAnswer("****"); //hide answer
+        inProgress.setIsFinished(game.isIsFinished());
+        inProgress.setRounds(game.getRounds());
+
+        return inProgress;
+    }
+
     /**
      * Convert all Round obj's into VM's
      *
