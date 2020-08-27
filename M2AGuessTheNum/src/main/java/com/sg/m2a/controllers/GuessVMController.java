@@ -14,12 +14,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/guessthenumber/vm")
 public class GuessVMController {
-    
+
     @Autowired
     GuessServiceImpl serv;
-    
-    //FIXME convert all to round VM's
-    
+
     /**
      * Starts a new game
      *
