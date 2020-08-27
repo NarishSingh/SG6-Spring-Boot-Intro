@@ -25,8 +25,11 @@ public interface GuessService {
      *                                      entries
      * @throws NotFoundException            if consumer attempts to retrieve a
      *                                      non-existing game
+     * @throws GameCompleteException        if consumer has already completed
+     *                                      the game
      */
-    Round guess(String guess, int gameId) throws DuplicateDigitEntryException, NotFoundException;
+    Round guess(String guess, int gameId) throws DuplicateDigitEntryException, NotFoundException,
+            GameCompleteException;
 
     /**
      * Retrieve a list of all games, regardless of status
@@ -75,7 +78,7 @@ public interface GuessService {
      * @return {RoundVM} vm object
      */
     RoundVM convert(Round round);
-            
+
     /**
      * Convert all Round obj's for one game VM's
      *

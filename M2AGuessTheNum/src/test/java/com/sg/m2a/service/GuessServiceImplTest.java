@@ -126,6 +126,38 @@ public class GuessServiceImplTest {
     }
 
     /**
+     * Test of guess method, of class GuessServiceImpl - game win but a next
+     * round attempted
+     */
+    @Test
+    public void testGuessGameWinNextRoundFail() throws Exception {
+        //arrange
+        Game newTest = testServ.newGame();
+
+        final String exactGuess = newTest.getAnswer();
+        final String perfectResult = "e:4:p:0";
+
+        assertFalse(newTest.isIsFinished());
+
+        //act and assert
+        try {
+            Round testRound = testServ.guess(exactGuess, newTest.getGameId());
+
+            assertNotNull(testRound);
+            assertEquals(testRound.getDigitMatches(), perfectResult);
+
+            Game afterRound = testServ.readGame(newTest.getGameId());
+            assertTrue(afterRound.isIsFinished());
+            
+            Round failRound = testServ.guess("6789", newTest.getGameId());
+        } catch (DuplicateDigitEntryException | NotFoundException e) {
+            fail("Valid game and guess");
+        } catch(GameCompleteException e){
+            return;
+        }
+    }
+
+    /**
      * Test of guess method, of class GuessServiceImpl - Fail by duplicate
      * digits
      */
@@ -177,8 +209,8 @@ public class GuessServiceImplTest {
         Game game1 = testServ.newGame();
         try {
             Round g1r1 = testServ.guess("5678", game1.getGameId());
-        } catch (DuplicateDigitEntryException
-                | NotFoundException e) {
+        } catch (DuplicateDigitEntryException | NotFoundException
+                | GameCompleteException e) {
             fail("Valid game and guess");
         }
 
@@ -186,7 +218,8 @@ public class GuessServiceImplTest {
         Game game2 = testServ.newGame();
         try {
             Round g2r1 = testServ.guess(game2.getAnswer(), game2.getGameId());
-        } catch (DuplicateDigitEntryException | NotFoundException e) {
+        } catch (DuplicateDigitEntryException | NotFoundException
+                | GameCompleteException e) {
             fail("Valid game and guess");
         }
 
@@ -236,7 +269,8 @@ public class GuessServiceImplTest {
             assertNotNull(fromDbWin);
             assertNotEquals(game1, fromDbWin);
             assertFalse(fromDbWin.getAnswer().equals("****"));
-        } catch (DuplicateDigitEntryException | NotFoundException e) {
+        } catch (DuplicateDigitEntryException | NotFoundException
+                | GameCompleteException e) {
             fail("Valid game and guess");
         }
     }
@@ -265,8 +299,8 @@ public class GuessServiceImplTest {
             assertTrue(g1rounds.contains(r1));
             assertTrue(g1rounds.contains(r2));
             assertTrue(g1rounds.contains(r3));
-        } catch (DuplicateDigitEntryException
-                | NotFoundException e) {
+        } catch (DuplicateDigitEntryException | NotFoundException
+                | GameCompleteException e) {
             fail("Valid game and guess");
         }
     }
@@ -283,7 +317,8 @@ public class GuessServiceImplTest {
         //act
         try {
             r1 = testServ.guess("1234", g1.getGameId());
-        } catch (DuplicateDigitEntryException | NotFoundException e) {
+        } catch (DuplicateDigitEntryException | NotFoundException
+                | GameCompleteException e) {
             fail("Valid game and guess");
         }
 
@@ -323,11 +358,12 @@ public class GuessServiceImplTest {
 
             assertEquals(allG1VMrounds.size(), 3);
             assertEquals(allG2VMrounds.size(), 2);
-        } catch (DuplicateDigitEntryException | NotFoundException e) {
+        } catch (DuplicateDigitEntryException | NotFoundException
+                | GameCompleteException e) {
             fail("Valid game and guess");
         }
     }
-    
+
     /**
      * Test of getAllGameRoundVM method, of class GuessServiceImpl. - fail
      */
@@ -335,7 +371,7 @@ public class GuessServiceImplTest {
     public void testgetAllGameRoundVMFail() throws Exception {
         //arrange
         int badGameId = 999999999;
-        
+
         //act & assert
         try {
             List<RoundVM> allG1VMrounds = testServ.getAllGameRoundVM(badGameId);
@@ -371,7 +407,8 @@ public class GuessServiceImplTest {
             List<RoundVM> allVMrounds = testServ.getAllRoundVM();
 
             assertEquals(allVMrounds.size(), 5);
-        } catch (DuplicateDigitEntryException | NotFoundException e) {
+        } catch (DuplicateDigitEntryException | NotFoundException
+                | GameCompleteException e) {
             fail("Valid game and guess");
         }
     }

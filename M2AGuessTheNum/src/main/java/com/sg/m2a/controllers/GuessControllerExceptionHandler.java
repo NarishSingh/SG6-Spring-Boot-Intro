@@ -1,6 +1,7 @@
 package com.sg.m2a.controllers;
 
 import com.sg.m2a.service.DuplicateDigitEntryException;
+import com.sg.m2a.service.GameCompleteException;
 import com.sg.m2a.service.NotFoundException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -63,6 +64,22 @@ public class GuessControllerExceptionHandler extends ResponseEntityExceptionHand
         e.setMessage(ex.getMessage());
 
         return new ResponseEntity<>(e, HttpStatus.NOT_FOUND);
+    }
+    
+    /**
+     * Deal with HTTP responses for attempts to play more rounds of a complete fame
+     *
+     * @param ex      {GameCompleteException} if game is finished
+     * @param request {WebRequest}
+     * @return {ResponseEntity} an http response with the exception throw
+     */
+    @ExceptionHandler(GameCompleteException.class)
+    public final ResponseEntity<Error> handleGameCompleteException(GameCompleteException ex,
+            WebRequest request) {
+        Error e = new Error();
+        e.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(e, HttpStatus.TOO_MANY_REQUESTS);
     }
 
 }

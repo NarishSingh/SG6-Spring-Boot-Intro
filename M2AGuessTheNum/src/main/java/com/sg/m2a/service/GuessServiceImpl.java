@@ -48,7 +48,17 @@ public class GuessServiceImpl implements GuessService {
 
     @Override
     public Round guess(String guess, int gameId) throws DuplicateDigitEntryException,
-            NotFoundException {
+            NotFoundException, GameCompleteException {
+        /*param verifications*/
+        Game game = gameDao.readGameById(gameId);
+        if (game == null) {
+            throw new NotFoundException("Game doesn't exist");
+        }
+        
+        if (game.isIsFinished()) {
+            throw new GameCompleteException("Player already won - start a new game");
+        }
+        
         validateDigitSet(guess);
 
         /*round creation*/
@@ -57,11 +67,6 @@ public class GuessServiceImpl implements GuessService {
         round.setGameId(gameId);
 
         /*results -  if correct, mark game as finished*/
-        Game game = gameDao.readGameById(gameId);
-        if (game == null) {
-            throw new NotFoundException("Game doesn't exist");
-        }
-
         if (game.getAnswer().equals(round.getGuess())) {
             game.setIsFinished(true);
             round.setDigitMatches("e:4:p:0");

@@ -4,6 +4,7 @@ import com.sg.m2a.models.Game;
 import com.sg.m2a.models.Round;
 import com.sg.m2a.models.RoundVM;
 import com.sg.m2a.service.DuplicateDigitEntryException;
+import com.sg.m2a.service.GameCompleteException;
 import com.sg.m2a.service.GuessServiceImpl;
 import com.sg.m2a.service.NotFoundException;
 import java.util.List;
@@ -40,17 +41,22 @@ public class GuessVMController {
      * @throws DuplicateDigitEntryException if a guess has duplicate digits
      * @throws NotFoundException            if consumer requests a game that
      *                                      doesn't exist
+     * @throws GameCompleteException        if consumer attempts to play after a
+     *                                      game is completed
      */
     @PostMapping("/guess")
     @ResponseStatus(HttpStatus.CREATED)
-    public Round checkGuess(@RequestBody Round round)
-            throws DuplicateDigitEntryException, NotFoundException {
+    public RoundVM checkGuess(@RequestBody Round round)
+            throws DuplicateDigitEntryException, NotFoundException, GameCompleteException {
         try {
-            return serv.guess(round.getGuess(), round.getGameId());
+            Round r = serv.guess(round.getGuess(), round.getGameId());
+            return serv.convert(r);
         } catch (DuplicateDigitEntryException e) {
             throw new DuplicateDigitEntryException("Bad guess - No duplicate digits allowed", e);
         } catch (NotFoundException e) {
             throw new NotFoundException("Game doesn't exist", e);
+        } catch (GameCompleteException e) {
+            throw new GameCompleteException("Game complete - please begin a new game", e);
         }
     }
 
