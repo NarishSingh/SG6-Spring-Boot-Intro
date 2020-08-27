@@ -68,14 +68,6 @@ public interface GuessService {
 
     /*View model methods*/
     /**
-     * Create VM to hide the answer of an in-progress game
-     *
-     * @param game {Game} and in-progress game obj
-     * @return {Game} a VM of the obj with its answer hidden
-     */
-    Game screenInProgressGame(Game game);
-
-    /**
      * Convert round model into a view model
      *
      * @param round {Round} well formed obj

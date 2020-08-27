@@ -174,9 +174,45 @@ public class GuessServiceImplTest {
     @Test
     public void testReadAllGames() {
         //arrange
+        //incomplete game - one round unlikely
+        Game game1 = testServ.newGame();
+        try {
+            Round g1r1 = testServ.guess("5678", game1.getGameId());
+        } catch (DuplicateDigitEntryException |
+                NotFoundException e) {
+            fail("Valid game and guess");
+        }
+        
+        //complete game - one round win
+        Game game2 = testServ.newGame();
+        try {
+            Round g2r1 = testServ.guess(game2.getAnswer(), game2.getGameId());
+        } catch (DuplicateDigitEntryException |
+                NotFoundException e) {
+            fail("Valid game and guess");
+        }
 
         //act
+        List<Game> allGames = testServ.readAllGames();
+        Game g1FromDb = allGames.get(0);
+        Game g2FromDb = allGames.get(1);
+        
         //assert
+        //exists and was updated
+        assertFalse(allGames.contains(game1));
+        assertEquals(game1.getGameId(), g1FromDb.getGameId());
+        assertNotEquals(game1, g1FromDb);
+        assertFalse(allGames.contains(game2));
+        assertEquals(game2.getGameId(), g2FromDb.getGameId());
+        assertNotEquals(game2, g2FromDb);
+        
+        //status check
+        assertFalse(g1FromDb.isIsFinished());
+        assertTrue(g2FromDb.isIsFinished());
+        
+        //data hiding
+        assertTrue(g1FromDb.getAnswer().equals("****"));
+        assertFalse(g2FromDb.getAnswer().equals("****"));
     }
 
     /**
@@ -195,28 +231,6 @@ public class GuessServiceImplTest {
      */
     @Test
     public void testReadGameRounds() throws Exception {
-        //arrange
-
-        //act
-        //assert
-    }
-
-    /**
-     * Test of validateDigitSet method, of class GuessServiceImpl.
-     */
-    @Test
-    public void testValidateDigitSet() throws Exception {
-        //arrange
-
-        //act
-        //assert
-    }
-
-    /**
-     * Test of screenInProgressGame method, of class GuessServiceImpl.
-     */
-    @Test
-    public void testScreenInProgressGame() {
         //arrange
 
         //act

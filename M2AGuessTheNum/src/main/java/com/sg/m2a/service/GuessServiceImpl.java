@@ -151,8 +151,13 @@ public class GuessServiceImpl implements GuessService {
     }
 
     /*View model methods*/
-    @Override
-    public Game screenInProgressGame(Game game) {
+    /**
+     * Create VM to hide the answer of an in-progress game
+     *
+     * @param game {Game} and in-progress game obj
+     * @return {Game} a VM of the obj with its answer hidden
+     */
+    private Game screenInProgressGame(Game game) {
         Game inProgress = new Game();
         inProgress.setGameId(game.getGameId());
         inProgress.setAnswer("****"); //hide answer
