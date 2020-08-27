@@ -11,7 +11,7 @@ public interface GuessService {
     /**
      * Start a new Game and generate an answer
      *
-     * @return {Game} a fully formed Game obj,
+     * @return {Game} a fully formed Game obj
      */
     Game newGame();
 
@@ -28,8 +28,8 @@ public interface GuessService {
      * @throws GameCompleteException        if consumer has already completed
      *                                      the game
      */
-    Round guess(String guess, int gameId) throws DuplicateDigitEntryException, NotFoundException,
-            GameCompleteException;
+    Round guess(String guess, int gameId) throws DuplicateDigitEntryException,
+            NotFoundException, GameCompleteException;
 
     /**
      * Retrieve a list of all games, regardless of status
