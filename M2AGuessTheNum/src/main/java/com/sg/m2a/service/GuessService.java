@@ -59,7 +59,8 @@ public interface GuessService {
     /**
      * Validate guess to ensure it has no duplicate digits
      *
-     * @param guessAnswer {String} 4 digits entered by player or the answer generated
+     * @param guessAnswer {String} 4 digits entered by player or the answer
+     *                    generated
      * @return {String} if valid, return the guess
      * @throws DuplicateDigitEntryException if contains duplicate entries, throw
      *                                      this
@@ -67,6 +68,23 @@ public interface GuessService {
     String validateDigitSet(String guessAnswer) throws DuplicateDigitEntryException;
 
     /*View model methods*/
+    /**
+     * Convert round model into a view model
+     *
+     * @param round {Round} well formed obj
+     * @return {RoundVM} vm object
+     */
+    RoundVM convert(Round round);
+            
+    /**
+     * Convert all Round obj's for one game VM's
+     *
+     * @param id {int} an existing game id
+     * @return {List] all round vm's for one game
+     * @throws NotFoundException if game does not exist
+     */
+    List<RoundVM> getAllGameRoundVM(int id) throws NotFoundException;
+
     /**
      * Convert all Round obj's into VM's
      *

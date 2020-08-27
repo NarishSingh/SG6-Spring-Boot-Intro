@@ -167,13 +167,8 @@ public class GuessServiceImpl implements GuessService {
         return inProgress;
     }
 
-    /**
-     * Convert round model into a view model
-     *
-     * @param round {Round} well formed obj
-     * @return {RoundVM} vm object
-     */
-    private RoundVM convert(Round round) {
+    @Override
+    public RoundVM convert(Round round) {
         RoundVM roundVM = new RoundVM();
 
         //guess
@@ -225,4 +220,21 @@ public class GuessServiceImpl implements GuessService {
         return roundVMs;
     }
 
+    @Override
+    public List<RoundVM> getAllGameRoundVM(int id) throws NotFoundException {
+        Game game = gameDao.readGameById(id);
+        if (game == null) {
+            throw new NotFoundException("Game doesn't exist");
+        }
+        
+        List<Round> rounds = gameDao.associateRoundsWithGame(game);
+        List<RoundVM> roundVMs = new ArrayList<>();
+
+        for (Round r : rounds) {
+            roundVMs.add(convert(r));
+        }
+
+        return roundVMs;
+    }
+    
 }
