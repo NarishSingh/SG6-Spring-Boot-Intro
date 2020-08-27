@@ -249,5 +249,5 @@ public class GuessServiceImpl implements GuessService {
 
         return roundVMs;
     }
-
+    
 }

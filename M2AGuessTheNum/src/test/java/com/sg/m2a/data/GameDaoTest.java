@@ -103,6 +103,8 @@ public class GameDaoTest {
         round1 = roundDao.createRound(r1);
         round2 = roundDao.createRound(r2);
         round3 = roundDao.createRound(r3);
+        gameDao.associateRoundsWithGame(game1);
+        gameDao.associateRoundsWithGame(game2);
     }
 
     @After
