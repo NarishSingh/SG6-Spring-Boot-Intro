@@ -65,9 +65,10 @@ public class GuessControllerExceptionHandler extends ResponseEntityExceptionHand
 
         return new ResponseEntity<>(e, HttpStatus.NOT_FOUND);
     }
-    
+
     /**
-     * Deal with HTTP responses for attempts to play more rounds of a complete fame
+     * Deal with HTTP responses for attempts to play more rounds of a complete
+     * fame
      *
      * @param ex      {GameCompleteException} if game is finished
      * @param request {WebRequest}

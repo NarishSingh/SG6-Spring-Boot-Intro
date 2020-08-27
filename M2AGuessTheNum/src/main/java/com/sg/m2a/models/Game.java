@@ -10,10 +10,6 @@ public class Game {
     private boolean isFinished;
     private List<Round> rounds;
 
-    /*ctors*/
-    public Game() {
-    }
-
     /*get/set*/
     public int getGameId() {
         return gameId;
@@ -46,7 +42,7 @@ public class Game {
     public void setRounds(List<Round> rounds) {
         this.rounds = rounds;
     }
-    
+
     /*testing*/
     @Override
     public int hashCode() {
@@ -87,8 +83,8 @@ public class Game {
 
     @Override
     public String toString() {
-        return "Game{" + "gameId=" + gameId + ", answer=" + answer + ", isFinished=" 
+        return "Game{" + "gameId=" + gameId + ", answer=" + answer + ", isFinished="
                 + isFinished + ", rounds=" + rounds + '}';
     }
-    
+
 }

@@ -65,5 +65,5 @@ public class RoundVM {
     public String toString() {
         return "RoundVM{" + "guess=" + guess + ", roundResult=" + roundResult + '}';
     }
-    
+
 }

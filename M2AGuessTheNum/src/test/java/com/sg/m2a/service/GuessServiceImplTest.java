@@ -148,11 +148,11 @@ public class GuessServiceImplTest {
 
             Game afterRound = testServ.readGame(newTest.getGameId());
             assertTrue(afterRound.isIsFinished());
-            
+
             Round failRound = testServ.guess("6789", newTest.getGameId());
         } catch (DuplicateDigitEntryException | NotFoundException e) {
             fail("Valid game and guess");
-        } catch(GameCompleteException e){
+        } catch (GameCompleteException e) {
             return;
         }
     }

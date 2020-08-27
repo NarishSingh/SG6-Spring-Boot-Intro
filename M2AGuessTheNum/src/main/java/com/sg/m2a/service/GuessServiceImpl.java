@@ -54,11 +54,11 @@ public class GuessServiceImpl implements GuessService {
         if (game == null) {
             throw new NotFoundException("Game doesn't exist");
         }
-        
+
         if (game.isIsFinished()) {
             throw new GameCompleteException("Player already won - start a new game");
         }
-        
+
         validateDigitSet(guess);
 
         /*round creation*/
@@ -249,5 +249,5 @@ public class GuessServiceImpl implements GuessService {
 
         return roundVMs;
     }
-    
+
 }

@@ -11,10 +11,6 @@ public class Round {
     private LocalDateTime time;
     private String digitMatches;
 
-    /*ctors*/
-    public Round() {
-    }
-
     /*get/set*/
     public int getRoundId() {
         return roundId;
@@ -31,7 +27,7 @@ public class Round {
     public void setGameId(int gameId) {
         this.gameId = gameId;
     }
-    
+
     public String getGuess() {
         return guess;
     }
@@ -55,7 +51,7 @@ public class Round {
     public void setDigitMatches(String digitMatches) {
         this.digitMatches = digitMatches;
     }
-    
+
     /*testing*/
     @Override
     public int hashCode() {
@@ -100,8 +96,8 @@ public class Round {
 
     @Override
     public String toString() {
-        return "Round{" + "roundId=" + roundId + ", gameId=" + gameId + ", guess=" 
+        return "Round{" + "roundId=" + roundId + ", gameId=" + gameId + ", guess="
                 + guess + ", time=" + time + ", digitMatches=" + digitMatches + '}';
     }
-    
+
 }

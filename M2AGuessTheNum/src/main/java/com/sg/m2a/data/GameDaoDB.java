@@ -43,10 +43,10 @@ public class GameDaoDB implements GameDao {
         try {
             String readQuery = "SELECT * FROM game "
                     + "WHERE gameId = ?;";
-            
+
             Game game = jdbc.queryForObject(readQuery, new GameMapper(), id);
             associateRoundsWithGame(game);
-            
+
             return game;
         } catch (DataAccessException e) {
             return null;
@@ -58,11 +58,11 @@ public class GameDaoDB implements GameDao {
         String readAllQuery = "SELECT * FROM game;";
 
         List<Game> allGames = jdbc.query(readAllQuery, new GameMapper());
-        
+
         for (Game game : allGames) {
             associateRoundsWithGame(game);
         }
-        
+
         return allGames;
     }
 
@@ -121,7 +121,7 @@ public class GameDaoDB implements GameDao {
             g.setGameId(rs.getInt("gameId"));
             g.setAnswer(rs.getString("answer"));
             g.setIsFinished(rs.getBoolean("isFinished"));
-            
+
             return g;
         }
 
