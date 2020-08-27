@@ -68,14 +68,6 @@ public interface GuessService {
 
     /*View model methods*/
     /**
-     * Convert round model into a view model
-     *
-     * @param round {Round} well formed obj
-     * @return {RoundVM} vm object
-     */
-    RoundVM convert(Round round);
-
-    /**
      * Convert all Round obj's into VM's
      *
      * @return {List} all Round VM's

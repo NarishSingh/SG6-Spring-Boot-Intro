@@ -167,8 +167,13 @@ public class GuessServiceImpl implements GuessService {
         return inProgress;
     }
 
-    @Override
-    public RoundVM convert(Round round) {
+    /**
+     * Convert round model into a view model
+     *
+     * @param round {Round} well formed obj
+     * @return {RoundVM} vm object
+     */
+    private RoundVM convert(Round round) {
         RoundVM roundVM = new RoundVM();
 
         //guess
