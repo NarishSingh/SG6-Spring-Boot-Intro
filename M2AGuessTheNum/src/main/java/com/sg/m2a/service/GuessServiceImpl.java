@@ -36,7 +36,7 @@ public class GuessServiceImpl implements GuessService {
         while (ansSet.size() < 4) {
             ansSet.add(rng.nextInt(10));
         }
-        
+
         String ansString = "";
         for (Integer i : ansSet) {
             ansString += i;
@@ -186,7 +186,11 @@ public class GuessServiceImpl implements GuessService {
         if (exactCount == '0' && partialCount == '0') {
             matchesPrompt += "no digit matches...";
         } else {
-            if (exactCount != '0') {
+            //exact
+            if (exactCount == '1') {
+                matchesPrompt += exactCount;
+                matchesPrompt += " exact match";
+            } else if (exactCount != '0') {
                 matchesPrompt += exactCount;
                 matchesPrompt += " exact matches";
             }
@@ -195,7 +199,11 @@ public class GuessServiceImpl implements GuessService {
                 matchesPrompt += " and ";
             }
 
-            if (partialCount != '0') {
+            //partial
+            if (partialCount == '1') {
+                matchesPrompt += partialCount;
+                matchesPrompt += " partial match";
+            } else if (partialCount != '0') {
                 matchesPrompt += partialCount;
                 matchesPrompt += " partial matches";
             }
@@ -226,7 +234,7 @@ public class GuessServiceImpl implements GuessService {
         if (game == null) {
             throw new NotFoundException("Game doesn't exist");
         }
-        
+
         List<Round> rounds = gameDao.associateRoundsWithGame(game);
         List<RoundVM> roundVMs = new ArrayList<>();
 
@@ -236,5 +244,5 @@ public class GuessServiceImpl implements GuessService {
 
         return roundVMs;
     }
-    
+
 }

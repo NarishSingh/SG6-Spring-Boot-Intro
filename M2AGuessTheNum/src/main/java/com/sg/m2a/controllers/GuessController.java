@@ -33,18 +33,19 @@ public class GuessController {
     /**
      * Play a round - consumer tries to guess the number
      *
-     * @param guess  {String} guess with 4 unique digits passed in through JSON
-     * @param gameId {int} game's id number passed in through JSON
+     * @param round {Round} a round object, requires values for "guess" as a
+     *              String and "gameId" as an int
      * @return {Round} the Round obj
      * @throws DuplicateDigitEntryException if a guess has duplicate digits
      * @throws NotFoundException            if consumer requests a game that
      *                                      doesn't exist
      */
     @PostMapping("/guess")
-    public Round checkGuess(@RequestBody String guess, @RequestBody int gameId)
+    @ResponseStatus(HttpStatus.CREATED)
+    public Round checkGuess(@RequestBody Round round)
             throws DuplicateDigitEntryException, NotFoundException {
         try {
-            return serv.guess(guess, gameId);
+            return serv.guess(round.getGuess(), round.getGameId());
         } catch (DuplicateDigitEntryException e) {
             throw new DuplicateDigitEntryException("Bad guess - No duplicate digits allowed", e);
         } catch (NotFoundException e) {
@@ -58,7 +59,7 @@ public class GuessController {
      * @return {List} all in-progress or completed games, only complete games
      *         will show their answers
      */
-    @GetMapping("game")
+    @GetMapping("/game")
     public List<Game> getAllGames() {
         return serv.readAllGames();
     }
@@ -66,14 +67,14 @@ public class GuessController {
     /**
      * Get an in progress or completed game
      *
-     * @param id {int} gameId of a existing game
+     * @param gameId {int} gameId of a existing game
      * @return {Game} the obj stored at that id
      * @throws NotFoundException if consumer requests a game that doesn't exist
      */
-    @GetMapping("game/{gameId}")
-    public Game getGameById(@PathVariable int id) throws NotFoundException {
+    @GetMapping("/game/{gameId}")
+    public Game getGameById(@PathVariable int gameId) throws NotFoundException {
         try {
-            return serv.readGame(id);
+            return serv.readGame(gameId);
         } catch (NotFoundException e) {
             throw new NotFoundException("Game doesn't exist", e);
         }
@@ -86,7 +87,7 @@ public class GuessController {
      * @return {List} a game's rounds sorted by time
      * @throws NotFoundException if consumer requests a game that doesn't exist
      */
-    @GetMapping("rounds/{gameId}")
+    @GetMapping("/rounds/{gameId}")
     public List<Round> getGameRounds(@PathVariable int gameId) throws NotFoundException {
         try {
             return serv.readGameRounds(gameId);

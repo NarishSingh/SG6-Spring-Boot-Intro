@@ -43,7 +43,7 @@ public class GameDaoDB implements GameDao {
         try {
             String readQuery = "SELECT * FROM game "
                     + "WHERE gameId = ?;";
-
+            
             return jdbc.queryForObject(readQuery, new GameMapper(), id);
         } catch (DataAccessException e) {
             return null;
