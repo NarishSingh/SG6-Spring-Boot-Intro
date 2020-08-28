@@ -2,7 +2,7 @@ package com.sg.m2a.controllers;
 
 import com.sg.m2a.models.Game;
 import com.sg.m2a.models.Round;
-import com.sg.m2a.service.DuplicateDigitEntryException;
+import com.sg.m2a.service.BadGuessException;
 import com.sg.m2a.service.GameCompleteException;
 import com.sg.m2a.service.GuessServiceImpl;
 import com.sg.m2a.service.NotFoundException;
@@ -37,25 +37,24 @@ public class GuessController {
      * @param round {Round} a round object, requires values for "guess" as a
      *              String and "gameId" as an int
      * @return {Round} the Round obj
-     * @throws DuplicateDigitEntryException if a guess has duplicate digits
-     * @throws NotFoundException            if consumer requests a game that
-     *                                      doesn't exist
-     * @throws GameCompleteException        if consumer attempts to play after a
-     *                                      game is completed
+     * @throws BadGuessException     if a guess has duplicate digits
+     * @throws NotFoundException     if consumer requests a game that doesn't
+     *                               exist
+     * @throws GameCompleteException if consumer attempts to play after a game
+     *                               is completed
      */
     @PostMapping("/guess")
     @ResponseStatus(HttpStatus.CREATED)
     public Round checkGuess(@RequestBody Round round)
-            throws DuplicateDigitEntryException, NotFoundException, GameCompleteException {
+            throws BadGuessException, NotFoundException, GameCompleteException {
         try {
             return serv.guess(round.getGuess(), round.getGameId());
-        } catch (DuplicateDigitEntryException e) {
-            throw new DuplicateDigitEntryException("Invalid - 4 digits ranging from 0-9 required"
-                    + ", and no duplicate digits allowed.", e);
+        } catch (BadGuessException e) {
+            throw new BadGuessException(e.getMessage(), e);
         } catch (NotFoundException e) {
-            throw new NotFoundException("Game doesn't exist", e);
+            throw new NotFoundException(e.getMessage(), e);
         } catch (GameCompleteException e) {
-            throw new GameCompleteException("Game complete - please begin a new game", e);
+            throw new GameCompleteException(e.getMessage(), e);
         }
     }
 
@@ -82,7 +81,7 @@ public class GuessController {
         try {
             return serv.readGame(gameId);
         } catch (NotFoundException e) {
-            throw new NotFoundException("Game doesn't exist", e);
+            throw new NotFoundException(e.getMessage(), e);
         }
     }
 
@@ -98,7 +97,7 @@ public class GuessController {
         try {
             return serv.readGameRounds(gameId);
         } catch (NotFoundException e) {
-            throw new NotFoundException("Game doesn't exist", e);
+            throw new NotFoundException(e.getMessage(), e);
         }
     }
 

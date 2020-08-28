@@ -22,14 +22,12 @@ public interface GuessService {
      * @param guess  {String} a 4 digit guess from the consumer
      * @param gameId {int} the id of an existing game
      * @return {Round} a fully formed Round obj
-     * @throws DuplicateDigitEntryException if consumer's guess has duplicate
-     *                                      entries
-     * @throws NotFoundException            if consumer attempts to retrieve a
-     *                                      non-existing game
-     * @throws GameCompleteException        if consumer has already completed
-     *                                      the game
+     * @throws BadGuessException     if consumer's guess has duplicate entries
+     * @throws NotFoundException     if consumer attempts to retrieve a
+     *                               non-existing game
+     * @throws GameCompleteException if consumer has already completed the game
      */
-    Round guess(String guess, int gameId) throws DuplicateDigitEntryException,
+    Round guess(String guess, int gameId) throws BadGuessException,
             NotFoundException, GameCompleteException;
 
     /**
@@ -66,10 +64,9 @@ public interface GuessService {
      * @param guessAnswer {String} 4 digits entered by player or the answer
      *                    generated
      * @return {String} if valid, return the guess
-     * @throws DuplicateDigitEntryException if contains duplicate entries, throw
-     *                                      this
+     * @throws BadGuessException if contains duplicate entries, throw this
      */
-    String validateDigitSet(String guessAnswer) throws DuplicateDigitEntryException;
+    String validateDigitSet(String guessAnswer) throws BadGuessException;
 
     /*View model methods*/
     /**

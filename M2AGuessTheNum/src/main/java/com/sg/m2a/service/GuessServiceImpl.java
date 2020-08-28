@@ -48,7 +48,7 @@ public class GuessServiceImpl implements GuessService {
     }
 
     @Override
-    public Round guess(String guess, int gameId) throws DuplicateDigitEntryException,
+    public Round guess(String guess, int gameId) throws BadGuessException,
             NotFoundException, GameCompleteException {
         /*param verifications*/
         Game game = gameDao.readGameById(gameId);
@@ -141,15 +141,18 @@ public class GuessServiceImpl implements GuessService {
 
     /*helper methods*/
     @Override
-    public String validateDigitSet(String guess) throws DuplicateDigitEntryException {
+    public String validateDigitSet(String guess) throws BadGuessException {
+        if (!guess.matches("[0-9]{4}")) {
+            throw new BadGuessException("Invalid - 4 digits ranging from 0-9 required");
+        }
+
         Set<Integer> guessSet = new TreeSet<>();
         for (int i = 0; i < guess.length(); i++) {
             guessSet.add(Integer.valueOf(guess.charAt(i)));
         }
 
         if (guessSet.size() != 4) {
-            throw new DuplicateDigitEntryException("Invalid - 4 digits ranging from 0-9 required"
-                    + ", and no duplicate digits allowed.");
+            throw new BadGuessException("Invalid - no duplicate digits allowed.");
         } else {
             return guess;
         }
@@ -191,7 +194,6 @@ public class GuessServiceImpl implements GuessService {
         //guess
         String guessPrompt = "You guessed - ";
         guessPrompt += round.getGuess();
-        guessPrompt += ".";
         roundVM.setGuess(guessPrompt);
 
         //matches

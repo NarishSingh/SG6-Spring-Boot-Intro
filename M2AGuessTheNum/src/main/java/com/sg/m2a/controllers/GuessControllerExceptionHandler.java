@@ -1,6 +1,6 @@
 package com.sg.m2a.controllers;
 
-import com.sg.m2a.service.DuplicateDigitEntryException;
+import com.sg.m2a.service.BadGuessException;
 import com.sg.m2a.service.GameCompleteException;
 import com.sg.m2a.service.NotFoundException;
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -36,13 +36,13 @@ public class GuessControllerExceptionHandler extends ResponseEntityExceptionHand
     /**
      * Deal with HTTP responses for faulty guess entry exceptions
      *
-     * @param ex      {DuplicateDigitEntryException} if any digit is repeated
-     *                within a consumer guess in a round
+     * @param ex      {BadGuessException} if any digit is repeated within a
+     *                consumer guess in a round
      * @param request {WebRequest}
      * @return {ResponseEntity} an http response with the exception throw
      */
-    @ExceptionHandler(DuplicateDigitEntryException.class)
-    public final ResponseEntity<Error> handleDuplicateEntryException(DuplicateDigitEntryException ex,
+    @ExceptionHandler(BadGuessException.class)
+    public final ResponseEntity<Error> handleDuplicateEntryException(BadGuessException ex,
             WebRequest request) {
         Error e = new Error();
         e.setMessage(ex.getMessage());
