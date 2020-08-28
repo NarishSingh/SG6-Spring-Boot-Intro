@@ -52,9 +52,7 @@ public class GuessServiceImpl implements GuessService {
             NotFoundException, GameCompleteException {
         /*param verifications*/
         Game game = gameDao.readGameById(gameId);
-        if (game == null) {
-            throw new NotFoundException("Game doesn't exist");
-        }
+        validateGameRead(game);
 
         if (game.isIsFinished()) {
             throw new GameCompleteException("Player already won - start a new game");
@@ -69,9 +67,11 @@ public class GuessServiceImpl implements GuessService {
 
         /*results -  if correct, mark game as finished*/
         if (game.getAnswer().equals(round.getGuess())) {
+            //win
             game.setIsFinished(true);
             round.setDigitMatches("e:4:p:0");
         } else {
+            //loss
             int exactCount = 0;
             int partialCount = 0;
 
@@ -89,9 +89,9 @@ public class GuessServiceImpl implements GuessService {
             game.setIsFinished(false);
         }
 
-        /*update game obj + game/round db's regardless of status*/
+        /*update db's and associate obj's regardless of gameplay status*/
         Round newRound = roundDao.createRound(round);
-        gameDao.updateGame(game); //updates status and associates rounds
+        gameDao.updateGame(game);
 
         return newRound;
     }
@@ -128,9 +128,7 @@ public class GuessServiceImpl implements GuessService {
     @Override
     public List<Round> readGameRounds(int gameId) throws NotFoundException {
         Game game = gameDao.readGameById(gameId);
-        if (game == null) {
-            throw new NotFoundException("Game doesn't exist");
-        }
+        validateGameRead(game);
 
         List<Round> rounds = gameDao.associateRoundsWithGame(game);
 
@@ -154,6 +152,18 @@ public class GuessServiceImpl implements GuessService {
                     + ", and no duplicate digits allowed.");
         } else {
             return guess;
+        }
+    }
+
+    /**
+     * Stops a player from adding a new guess/round to a finished game
+     *
+     * @param game {Game} a in-progress or complete game
+     * @throws NotFoundException if game doesn't exist
+     */
+    private void validateGameRead(Game game) throws NotFoundException {
+        if (game == null) {
+            throw new NotFoundException("Game doesn't exist");
         }
     }
 
@@ -237,7 +247,6 @@ public class GuessServiceImpl implements GuessService {
         //answer
         String ansPrompt = "The answer is - ";
         ansPrompt += game.getAnswer();
-        ansPrompt += ".";
 
         gameVM.setAnswer(ansPrompt);
 
@@ -264,9 +273,7 @@ public class GuessServiceImpl implements GuessService {
     @Override
     public List<RoundVM> getAllGameRoundVM(int id) throws NotFoundException {
         Game game = gameDao.readGameById(id);
-        if (game == null) {
-            throw new NotFoundException("Game doesn't exist");
-        }
+        validateGameRead(game);
 
         List<Round> rounds = gameDao.associateRoundsWithGame(game);
         List<RoundVM> roundVMs = new ArrayList<>();

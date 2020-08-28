@@ -93,7 +93,7 @@ public class GuessVMController {
     public GameVM getGameVMById(@PathVariable int gameId) throws NotFoundException {
         try {
             Game game = serv.readGame(gameId);
-
+            
             return serv.convertGame(game);
         } catch (NotFoundException e) {
             throw new NotFoundException("Game doesn't exist", e);
