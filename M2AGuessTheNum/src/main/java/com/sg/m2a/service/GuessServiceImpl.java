@@ -152,7 +152,7 @@ public class GuessServiceImpl implements GuessService {
         }
 
         if (guessSet.size() != 4) {
-            throw new DuplicateDigitEntryException("Invalid - only digits 0-9 are acceptable"
+            throw new DuplicateDigitEntryException("Invalid - 4 digits ranging from 0-9 required"
                     + ", and no duplicate digits allowed.");
         } else {
             return guess;
