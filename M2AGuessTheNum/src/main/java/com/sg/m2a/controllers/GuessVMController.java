@@ -53,7 +53,8 @@ public class GuessVMController {
             Round r = serv.guess(round.getGuess(), round.getGameId());
             return serv.convertRound(r);
         } catch (DuplicateDigitEntryException e) {
-            throw new DuplicateDigitEntryException("Bad guess - No duplicate digits allowed", e);
+            throw new DuplicateDigitEntryException("Invalid - 4 digits ranging from 0-9 required"
+                    + ", and no duplicate digits allowed.", e);
         } catch (NotFoundException e) {
             throw new NotFoundException("Game doesn't exist", e);
         } catch (GameCompleteException e) {
