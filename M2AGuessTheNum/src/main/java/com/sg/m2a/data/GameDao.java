@@ -15,7 +15,7 @@ public interface GameDao {
     Game createGame(Game newGame);
 
     /**
-     * Find a game by its id
+     * Read a game from db and associate its rounds
      *
      * @param id {int} a game's id number, >0
      * @return {Game} the game from db corresponding to that pk, null if game
@@ -24,7 +24,7 @@ public interface GameDao {
     Game readGameById(int id);
 
     /**
-     * Find all games to date
+     * Read all games in db and associate their rounds
      *
      * @return {List} all active or completed games played
      */

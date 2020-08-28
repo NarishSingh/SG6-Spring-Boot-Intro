@@ -55,15 +55,19 @@ public class GameDaoDB implements GameDao {
 
     @Override
     public List<Game> readAllGames() {
-        String readAllQuery = "SELECT * FROM game;";
+        try {
+            String readAllQuery = "SELECT * FROM game;";
 
-        List<Game> allGames = jdbc.query(readAllQuery, new GameMapper());
+            List<Game> allGames = jdbc.query(readAllQuery, new GameMapper());
 
-        for (Game game : allGames) {
-            associateRoundsWithGame(game);
+            for (Game game : allGames) {
+                associateRoundsWithGame(game);
+            }
+
+            return allGames;
+        } catch (DataAccessException e) {
+            return null;
         }
-
-        return allGames;
     }
 
     @Override
