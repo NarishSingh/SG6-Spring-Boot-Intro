@@ -1,13 +1,14 @@
 package com.sg.m2a.controllers;
 
 import com.sg.m2a.models.Game;
+import com.sg.m2a.models.GameVM;
 import com.sg.m2a.models.Round;
 import com.sg.m2a.models.RoundVM;
 import com.sg.m2a.service.DuplicateDigitEntryException;
 import com.sg.m2a.service.GameCompleteException;
 import com.sg.m2a.service.GuessServiceImpl;
 import com.sg.m2a.service.NotFoundException;
-import java.util.List;
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +51,7 @@ public class GuessVMController {
             throws DuplicateDigitEntryException, NotFoundException, GameCompleteException {
         try {
             Round r = serv.guess(round.getGuess(), round.getGameId());
-            return serv.convert(r);
+            return serv.convertRound(r);
         } catch (DuplicateDigitEntryException e) {
             throw new DuplicateDigitEntryException("Bad guess - No duplicate digits allowed", e);
         } catch (NotFoundException e) {
@@ -65,10 +66,19 @@ public class GuessVMController {
      *
      * @return {List} all in-progress or completed games, only complete games
      *         will show their answers
+     * @throws NotFoundException if game doesn't exist
      */
     @GetMapping("/game")
-    public List<Game> getAllGames() {
-        return serv.readAllGames();
+    public List<GameVM> getAllGames() throws NotFoundException {
+        List<Game> allGames = serv.readAllGames();
+        List<GameVM> allGameVMs = new ArrayList<>();
+
+        for (Game game : allGames) {
+            allGameVMs.add(serv.convertGame(game));
+        }
+
+        return allGameVMs;
+
     }
 
     /**
@@ -79,9 +89,11 @@ public class GuessVMController {
      * @throws NotFoundException if consumer requests a game that doesn't exist
      */
     @GetMapping("/game/{gameId}")
-    public Game getGameById(@PathVariable int gameId) throws NotFoundException {
+    public GameVM getGameVMById(@PathVariable int gameId) throws NotFoundException {
         try {
-            return serv.readGame(gameId);
+            Game game = serv.readGame(gameId);
+
+            return serv.convertGame(game);
         } catch (NotFoundException e) {
             throw new NotFoundException("Game doesn't exist", e);
         }

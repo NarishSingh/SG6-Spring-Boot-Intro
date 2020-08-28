@@ -4,6 +4,7 @@ import com.sg.m2a.TestApplicationConfiguration;
 import com.sg.m2a.data.GameDao;
 import com.sg.m2a.data.RoundDao;
 import com.sg.m2a.models.Game;
+import com.sg.m2a.models.GameVM;
 import com.sg.m2a.models.Round;
 import com.sg.m2a.models.RoundVM;
 import java.util.List;
@@ -306,10 +307,10 @@ public class GuessServiceImplTest {
     }
 
     /**
-     * Test of convert method, of class GuessServiceImpl.
+     * Test of convertRound method, of class GuessServiceImpl.
      */
     @Test
-    public void testConvert() throws Exception {
+    public void testConvertRound() throws Exception {
         //arrange
         Game g1 = testServ.newGame();
         Round r1 = null;
@@ -322,12 +323,37 @@ public class GuessServiceImplTest {
             fail("Valid game and guess");
         }
 
-        RoundVM r1vm = testServ.convert(r1);
+        RoundVM r1vm = testServ.convertRound(r1);
 
         //assert
         assertNotNull(r1);
         assertNotNull(r1vm);
         assertNotEquals(r1, r1vm);
+    }
+
+    /**
+     * Test of convertGame method, of class GuessServiceImpl.
+     */
+    @Test
+    public void testConvertGame() throws Exception {
+        //arrange
+        Game g1 = testServ.newGame();
+        Round r1 = null;
+
+        //act
+        try {
+            r1 = testServ.guess("1234", g1.getGameId());
+        } catch (DuplicateDigitEntryException | NotFoundException
+                | GameCompleteException e) {
+            fail("Valid game and guess");
+        }
+
+        GameVM g1convert = testServ.convertGame(g1);
+
+        //assert
+        assertNotNull(g1);
+        assertNotNull(g1convert);
+        assertNotEquals(r1, g1convert);
     }
 
     /**

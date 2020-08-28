@@ -1,6 +1,7 @@
 package com.sg.m2a.service;
 
 import com.sg.m2a.models.Game;
+import com.sg.m2a.models.GameVM;
 import com.sg.m2a.models.Round;
 import com.sg.m2a.models.RoundVM;
 import java.util.List;
@@ -77,7 +78,16 @@ public interface GuessService {
      * @param round {Round} well formed obj
      * @return {RoundVM} vm object
      */
-    RoundVM convert(Round round);
+    RoundVM convertRound(Round round);
+
+    /**
+     * Convert Game model into vm
+     *
+     * @param game {Game} well formed obj
+     * @return {GameVm} vm obj
+     * @throws NotFoundException if consumer requests a game that doesn't exist
+     */
+    GameVM convertGame(Game game) throws NotFoundException;
 
     /**
      * Convert all Round obj's for one game VM's

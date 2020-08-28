@@ -3,9 +3,12 @@ package com.sg.m2a.service;
 import com.sg.m2a.data.GameDao;
 import com.sg.m2a.data.RoundDao;
 import com.sg.m2a.models.Game;
+import com.sg.m2a.models.GameVM;
 import com.sg.m2a.models.Round;
 import com.sg.m2a.models.RoundVM;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -173,7 +176,7 @@ public class GuessServiceImpl implements GuessService {
     }
 
     @Override
-    public RoundVM convert(Round round) {
+    public RoundVM convertRound(Round round) {
         RoundVM roundVM = new RoundVM();
 
         //guess
@@ -214,6 +217,11 @@ public class GuessServiceImpl implements GuessService {
             }
 
             matchesPrompt += "!";
+
+            //win
+            if (exactCount == '4') {
+                matchesPrompt += " YOU WIN!!!";
+            }
         }
 
         roundVM.setRoundResult(matchesPrompt);
@@ -222,12 +230,33 @@ public class GuessServiceImpl implements GuessService {
     }
 
     @Override
+    public GameVM convertGame(Game game) throws NotFoundException {
+        GameVM gameVM = new GameVM();
+        gameVM.setGameId(game.getGameId());
+        gameVM.setIsFinished(game.isIsFinished());
+
+        //answer
+        String ansPrompt = "The answer is - ";
+        ansPrompt += game.getAnswer();
+        ansPrompt += ".";
+
+        gameVM.setAnswer(ansPrompt);
+
+        //Convert rounds
+        List<RoundVM> gameVMroundVM;
+        gameVMroundVM = this.getAllGameRoundVM(game.getGameId());
+        gameVM.setRounds(gameVMroundVM);
+
+        return gameVM;
+    }
+
+    @Override
     public List<RoundVM> getAllRoundVM() {
         List<Round> rounds = roundDao.readAllRounds();
         List<RoundVM> roundVMs = new ArrayList<>();
 
         for (Round r : rounds) {
-            roundVMs.add(convert(r));
+            roundVMs.add(convertRound(r));
         }
 
         return roundVMs;
@@ -244,7 +273,7 @@ public class GuessServiceImpl implements GuessService {
         List<RoundVM> roundVMs = new ArrayList<>();
 
         for (Round r : rounds) {
-            roundVMs.add(convert(r));
+            roundVMs.add(convertRound(r));
         }
 
         return roundVMs;
