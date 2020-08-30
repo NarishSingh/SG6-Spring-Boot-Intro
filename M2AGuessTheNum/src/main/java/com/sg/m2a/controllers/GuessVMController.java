@@ -70,7 +70,13 @@ public class GuessVMController {
      */
     @GetMapping("/game")
     public List<GameVM> getAllGames() throws NotFoundException {
-        List<Game> allGames = serv.readAllGames();
+        List<Game> allGames;
+        try {
+            allGames = serv.readAllGames();
+        } catch (NotFoundException e) {
+            throw new NotFoundException(e.getMessage(), e);
+        }
+
         List<GameVM> allGameVMs = new ArrayList<>();
 
         for (Game game : allGames) {
@@ -104,7 +110,8 @@ public class GuessVMController {
      *
      * @param gameId {int} gameId of a existing game
      * @return {List} a game's rounds as vm's sorted by time
-     * @throws NotFoundException if consumer requests a game that doesn't exist
+     * @throws NotFoundException if consumer requests a game that doesn't exist,
+     *                           or the existing game has no rounds
      */
     @GetMapping("/rounds/{gameId}")
     public List<RoundVM> getGameRounds(@PathVariable int gameId) throws NotFoundException {

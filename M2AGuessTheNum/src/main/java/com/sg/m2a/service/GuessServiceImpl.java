@@ -48,8 +48,8 @@ public class GuessServiceImpl implements GuessService {
     }
 
     @Override
-    public Round guess(String guess, int gameId) throws BadGuessException,
-            NotFoundException, GameCompleteException {
+    public Round guess(String guess, int gameId) throws BadGuessException, NotFoundException,
+            GameCompleteException {
         /*param verifications*/
         Game game = gameDao.readGameById(gameId);
         validateGameRead(game);
@@ -97,10 +97,14 @@ public class GuessServiceImpl implements GuessService {
     }
 
     @Override
-    public List<Game> readAllGames() {
+    public List<Game> readAllGames() throws NotFoundException {
         List<Game> allGames = gameDao.readAllGames();
-        List<Game> screenedGameList = new ArrayList<>();
 
+        if (allGames.isEmpty()) {
+            throw new NotFoundException("No games played yet");
+        }
+
+        List<Game> screenedGameList = new ArrayList<>();
         for (Game game : allGames) {
             if (game.isIsFinished()) {
                 screenedGameList.add(game);
@@ -131,6 +135,9 @@ public class GuessServiceImpl implements GuessService {
         validateGameRead(game);
 
         List<Round> rounds = gameDao.associateRoundsWithGame(game);
+        if (rounds.isEmpty()) {
+            throw new NotFoundException("No rounds played yet for this game");
+        }
 
         List<Round> sortedTime = rounds.stream()
                 .sorted(Comparator.comparing(Round::getTime))
@@ -254,17 +261,25 @@ public class GuessServiceImpl implements GuessService {
 
         //Convert rounds
         List<RoundVM> gameVMroundVM;
-        gameVMroundVM = this.getAllGameRoundVM(game.getGameId());
+        try {
+            gameVMroundVM = this.getAllGameRoundVM(game.getGameId());
+        } catch (NotFoundException e) {
+            gameVMroundVM = null;
+        }
+
         gameVM.setRounds(gameVMroundVM);
 
         return gameVM;
     }
 
     @Override
-    public List<RoundVM> getAllRoundVM() {
+    public List<RoundVM> getAllRoundVM() throws NotFoundException {
         List<Round> rounds = roundDao.readAllRounds();
-        List<RoundVM> roundVMs = new ArrayList<>();
+        if (rounds.isEmpty()) {
+            throw new NotFoundException("No rounds played yet");
+        }
 
+        List<RoundVM> roundVMs = new ArrayList<>();
         for (Round r : rounds) {
             roundVMs.add(convertRound(r));
         }
@@ -278,6 +293,9 @@ public class GuessServiceImpl implements GuessService {
         validateGameRead(game);
 
         List<Round> rounds = gameDao.associateRoundsWithGame(game);
+        if (rounds.isEmpty()) {
+            throw new NotFoundException("No rounds played yet");
+        }
         List<RoundVM> roundVMs = new ArrayList<>();
 
         for (Round r : rounds) {

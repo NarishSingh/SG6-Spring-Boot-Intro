@@ -7,6 +7,7 @@ import com.sg.m2a.models.Game;
 import com.sg.m2a.models.GameVM;
 import com.sg.m2a.models.Round;
 import com.sg.m2a.models.RoundVM;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -270,8 +271,7 @@ public class GuessServiceImplTest {
         Game game1 = testServ.newGame();
         try {
             Round g1r1 = testServ.guess("5678", game1.getGameId());
-        } catch (BadGuessException | NotFoundException
-                | GameCompleteException e) {
+        } catch (BadGuessException | NotFoundException | GameCompleteException e) {
             fail("Valid game and guess");
         }
 
@@ -279,13 +279,17 @@ public class GuessServiceImplTest {
         Game game2 = testServ.newGame();
         try {
             Round g2r1 = testServ.guess(game2.getAnswer(), game2.getGameId());
-        } catch (BadGuessException | NotFoundException
-                | GameCompleteException e) {
+        } catch (BadGuessException | NotFoundException | GameCompleteException e) {
             fail("Valid game and guess");
         }
 
         //act
-        List<Game> allGames = testServ.readAllGames();
+        List<Game> allGames = new ArrayList<>();
+        try {
+            allGames = testServ.readAllGames();
+        } catch (NotFoundException e) {
+            fail("Valid games");
+        }
         Game g1FromDb = allGames.get(0);
         Game g2FromDb = allGames.get(1);
 
@@ -305,6 +309,20 @@ public class GuessServiceImplTest {
         //data hiding
         assertTrue(g1FromDb.getAnswer().equals("****"));
         assertFalse(g2FromDb.getAnswer().equals("****"));
+    }
+
+    /**
+     * Test of readAllGames method, of class GuessServiceImpl. - fail by no
+     * games in db
+     */
+    @Test
+    public void testReadAllGamesFail() throws Exception {
+        try {
+            List<Game> noGames = testServ.readAllGames();
+            fail();
+        } catch (NotFoundException e) {
+            return;
+        }
     }
 
     /**
@@ -363,6 +381,22 @@ public class GuessServiceImplTest {
         } catch (BadGuessException | NotFoundException
                 | GameCompleteException e) {
             fail("Valid game and guess");
+        }
+    }
+    
+    /**
+     * Test of readGameRounds method, of class GuessServiceImpl. - fail by no rounds
+     */
+    @Test
+    public void testReadGameRoundsFail() throws Exception{
+        //arrange
+        Game g = testServ.newGame();
+        
+        try {
+            List<Round> noRounds = testServ.readGameRounds(g.getGameId());
+            fail();
+        } catch (NotFoundException e) {
+            return;
         }
     }
 

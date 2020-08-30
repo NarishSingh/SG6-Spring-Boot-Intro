@@ -63,10 +63,15 @@ public class GuessController {
      *
      * @return {List} all in-progress or completed games, only complete games
      *         will show their answers
+     * @throws NotFoundException if no games in db
      */
     @GetMapping("/game")
-    public List<Game> getAllGames() {
-        return serv.readAllGames();
+    public List<Game> getAllGames() throws NotFoundException {
+        try {
+            return serv.readAllGames();
+        } catch (NotFoundException e) {
+            throw new NotFoundException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -90,7 +95,8 @@ public class GuessController {
      *
      * @param gameId {int} gameId of a existing game
      * @return {List} a game's rounds sorted by time
-     * @throws NotFoundException if consumer requests a game that doesn't exist
+     * @throws NotFoundException if consumer requests a game that doesn't exist,
+     *                           or the existing game has no rounds
      */
     @GetMapping("/rounds/{gameId}")
     public List<Round> getGameRounds(@PathVariable int gameId) throws NotFoundException {

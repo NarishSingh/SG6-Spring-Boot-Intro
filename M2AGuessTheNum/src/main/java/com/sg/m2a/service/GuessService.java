@@ -35,8 +35,9 @@ public interface GuessService {
      *
      * @return {List} a list of all games, unprocessed if game is completed, but
      *         if game in-progress then answer data will be hidden
+     * @throws NotFoundException if no games played yet/none stored in db
      */
-    List<Game> readAllGames();
+    List<Game> readAllGames() throws NotFoundException;
 
     /**
      * Retrieve information on a game
@@ -87,6 +88,14 @@ public interface GuessService {
     GameVM convertGame(Game game) throws NotFoundException;
 
     /**
+     * Convert all Round obj's into VM's
+     *
+     * @return {List} all Round VM's
+     * @throws NotFoundException if no rounds have been played/stored to db
+     */
+    List<RoundVM> getAllRoundVM() throws NotFoundException;
+
+    /**
      * Convert all Round obj's for one game VM's
      *
      * @param id {int} an existing game id
@@ -94,12 +103,5 @@ public interface GuessService {
      * @throws NotFoundException if game does not exist
      */
     List<RoundVM> getAllGameRoundVM(int id) throws NotFoundException;
-
-    /**
-     * Convert all Round obj's into VM's
-     *
-     * @return {List} all Round VM's
-     */
-    List<RoundVM> getAllRoundVM();
 
 }
