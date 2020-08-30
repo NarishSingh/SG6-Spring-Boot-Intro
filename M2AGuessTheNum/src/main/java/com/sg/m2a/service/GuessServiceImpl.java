@@ -37,9 +37,11 @@ public class GuessServiceImpl implements GuessService {
         while (ansSet.size() < 4) {
             ansSet.add(rng.nextInt(10));
         }
+        List<Integer> ansList = new ArrayList<>(ansSet);
+        Collections.shuffle(ansList);
 
         String ansString = "";
-        for (Integer i : ansSet) {
+        for (Integer i : ansList) {
             ansString += i;
         }
         newGame.setAnswer(ansString);
